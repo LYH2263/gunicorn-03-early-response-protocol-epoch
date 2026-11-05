@@ -5,6 +5,7 @@
 """WSGI response writer for HTTP/2 streams."""
 
 from gunicorn import util
+from gunicorn.exchange import CommitStep, InterruptScope
 from gunicorn.http.wsgi import Response
 from gunicorn.http2.errors import HTTP2StreamError
 
@@ -42,6 +43,13 @@ class HTTP2Response(Response):
         # The stream is gone (peer reset, connection lost) or stalled past
         # cfg.timeout; the connection has already reset it. Stop the
         # application here rather than letting it write into the void.
+        ledger = getattr(self.h2_conn, "exchange_ledger", None)
+        if ledger is not None:
+            exchange = ledger.get_exchange(self.stream_id)
+            if exchange is not None:
+                exchange.commit(CommitStep.PEER_INTERRUPT,
+                                scope=InterruptScope.STREAM,
+                                kind="response_aborted", face=what)
         self._stream_ended = True
         raise HTTP2StreamError(self.stream_id, f"response aborted: {what}")
 

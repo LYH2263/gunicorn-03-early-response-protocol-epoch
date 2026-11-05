@@ -32,6 +32,17 @@ class Parser:
         # request counter (for keepalive connetions)
         self.req_count = 0
 
+        # One half-open exchange ledger per accepted connection.  It is
+        # attached to the (connection-scoped) unreader so that each Message
+        # parsed on this connection can open its own exchange on it without
+        # gaining new constructor parameters.  Disabled unless the host
+        # declares it.
+        self.exchange_ledger = None
+        if getattr(cfg, "exchange_ledger", False):
+            from gunicorn.exchange import ExchangeLedger, Protocol
+            self.exchange_ledger = ExchangeLedger(Protocol.H1)
+            self.unreader.exchange_ledger = self.exchange_ledger
+
     def __iter__(self):
         return self
 

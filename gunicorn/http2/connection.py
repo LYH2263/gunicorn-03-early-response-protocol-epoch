@@ -21,6 +21,8 @@ from .errors import (
 from .stream import HTTP2Stream, StreamState
 from .h2conn import server_connection_class
 from .request import HTTP2Request
+from gunicorn.exchange import (CommitStep, ExchangeLedger, Protocol,
+                               InterruptScope)
 from gunicorn.http.errors import ParseException
 
 
@@ -123,6 +125,28 @@ class HTTP2ServerConnection:
         self._closed = False
         self._initialized = False
 
+        # One half-open exchange ledger per HTTP/2 connection: every stream
+        # opens its own exchange on it, so sibling streams share one causal
+        # sequence without sharing storage.
+        self.exchange_ledger = None
+        if getattr(cfg, "exchange_ledger", False):
+            self.exchange_ledger = ExchangeLedger(Protocol.H2)
+
+    def _error_name(self, error_code):
+        try:
+            return HTTP2ErrorCode(error_code).name
+        except (ValueError, TypeError):
+            return str(error_code)
+
+    def _open_stream_exchange(self, stream, parent=None):
+        """Register a stream's half-open exchange on the connection ledger."""
+        if self.exchange_ledger is None:
+            return None
+        record = self.exchange_ledger.open_exchange(
+            stream.stream_id, protocol=Protocol.H2, parent=parent)
+        stream._exchange_record = record
+        return record
+
     def initiate_connection(self):
         """Send initial HTTP/2 settings to client.
 
@@ -171,6 +195,7 @@ class HTTP2ServerConnection:
         self._initialized = True
 
         stream = HTTP2Stream(stream_id=1, connection=self)
+        self._open_stream_exchange(stream)
         authority = ""
         for name, value in http1_req.headers:
             if name == "HOST":
@@ -262,7 +287,9 @@ class HTTP2ServerConnection:
             except TimeoutError:
                 if waiting_stream_id is not None:
                     # The body stalled; HTTP2Body finds the stream closed.
-                    self.abort_stream(waiting_stream_id, HTTP2ErrorCode.CANCEL)
+                    self.abort_stream(waiting_stream_id,
+                                      HTTP2ErrorCode.CANCEL,
+                                      kind="body_stall_timeout")
                 elif not self.streams:
                     self.close()
                 return []
@@ -272,7 +299,11 @@ class HTTP2ServerConnection:
         if not data:
             # Connection closed by peer
             self._closed = True
-            self._abort_all_streams()
+            if self.exchange_ledger is not None:
+                self.exchange_ledger.commit_connection(
+                    CommitStep.PEER_INTERRUPT,
+                    scope=InterruptScope.CONNECTION, kind="eof")
+            self._abort_all_streams(kind="eof")
             return []
 
         # Feed data to h2
@@ -388,6 +419,7 @@ class HTTP2ServerConnection:
         # Create new stream
         stream = HTTP2Stream(stream_id, self)
         self.streams[stream_id] = stream
+        self._open_stream_exchange(stream)
 
         # Process headers
         stream.receive_headers(headers, end_stream=False)
@@ -398,6 +430,12 @@ class HTTP2ServerConnection:
         except (ParseException, ValueError):
             # A bad request is a stream error, not a connection error
             # (RFC 9113 section 8.1.1).
+            if stream._exchange_record is not None:
+                stream._exchange_record.commit(
+                    CommitStep.PEER_INTERRUPT,
+                    scope=InterruptScope.STREAM,
+                    kind="protocol_error")
+                stream._exchange_record.close()
             self.streams.pop(stream_id, None)
             self._reset_quietly(stream_id, HTTP2ErrorCode.PROTOCOL_ERROR)
             return None
@@ -481,6 +519,14 @@ class HTTP2ServerConnection:
 
         if stream is None:
             return
+        # RST_STREAM is a stream-scoped peer interruption: it resets only
+        # this stream and must not touch any sibling exchange.
+        if stream._exchange_record is not None:
+            stream._exchange_record.commit(
+                CommitStep.PEER_INTERRUPT,
+                scope=InterruptScope.STREAM,
+                kind="rst_stream",
+                error_code=self._error_name(event.error_code))
         stream.reset(event.error_code)
         # A request the worker has not seen yet is dropped here; one it
         # is serving is cleaned up by the worker. Reset streams must not
@@ -488,6 +534,8 @@ class HTTP2ServerConnection:
         if any(r.stream is stream for r in self.pending_requests):
             self.pending_requests = collections.deque(
                 r for r in self.pending_requests if r.stream is not stream)
+            if stream._exchange_record is not None:
+                stream._exchange_record.close()
             self.streams.pop(stream_id, None)
 
     def _handle_connection_terminated(self, event):
@@ -504,11 +552,24 @@ class HTTP2ServerConnection:
         """
         if (event.error_code == HTTP2ErrorCode.NO_ERROR
                 and self.h2_conn.peer_goaway_last_stream_id is not None):
+            # Graceful GOAWAY: mark the connection draining but keep every
+            # established stream's exchange untouched (no immediate abort).
             self.draining = True
             self.peer_last_stream_id = event.last_stream_id
+            if self.exchange_ledger is not None:
+                self.exchange_ledger.commit_connection(
+                    CommitStep.PEER_INTERRUPT,
+                    scope=InterruptScope.CONNECTION,
+                    kind="goaway_graceful",
+                    last_stream_id=event.last_stream_id, draining=True)
             return
         self._closed = True
-        self._abort_all_streams()
+        if self.exchange_ledger is not None:
+            self.exchange_ledger.commit_connection(
+                CommitStep.PEER_INTERRUPT,
+                scope=InterruptScope.CONNECTION, kind="goaway",
+                error_code=self._error_name(event.error_code))
+        self._abort_all_streams(kind="goaway")
 
     def _count_reset(self):
         """Close the connection when the peer resets streams at flood rate."""
@@ -523,12 +584,16 @@ class HTTP2ServerConnection:
                 self._send_pending_data()
             except Exception:
                 pass
-            self._abort_all_streams()
+            self._abort_all_streams(kind="rst_flood")
             raise HTTP2ProtocolError("RST_STREAM rate exceeded")
 
-    def _abort_all_streams(self):
+    def _abort_all_streams(self, kind="connection_gone"):
         """The connection is gone: wake every stream still waiting on it."""
         for stream in list(self.streams.values()):
+            if stream._exchange_record is not None:
+                stream._exchange_record.commit(
+                    CommitStep.PEER_INTERRUPT,
+                    scope=InterruptScope.CONNECTION, kind=kind)
             stream.signal_disconnect()
 
     def _reset_quietly(self, stream_id, error_code):
@@ -554,6 +619,14 @@ class HTTP2ServerConnection:
             return None
 
         stream.receive_trailers(event.headers)
+        if stream._exchange_record is not None:
+            # HTTP/2 request trailers arrive as a second HEADERS frame; on
+            # the blocking path they are exposed to the WSGI app through
+            # request.trailers.
+            stream._exchange_record.commit(
+                CommitStep.REQUEST_TRAILERS,
+                disposition="frame",
+                names=[name for name, _ in event.headers])
         if stream._body_event:
             stream._body_event.set()
         return None
@@ -605,6 +678,9 @@ class HTTP2ServerConnection:
         # Send headers with end_stream=False (informational, more to follow)
         self.h2_conn.send_headers(stream_id, response_headers, end_stream=False)
         self._send_pending_data()
+        if stream._exchange_record is not None:
+            stream._exchange_record.commit(
+                CommitStep.INFORMATIONAL, status=status, sent=True)
 
     def send_response_headers(self, stream_id, status, headers,
                               end_stream=False):
@@ -638,6 +714,10 @@ class HTTP2ServerConnection:
             return False
         stream.send_headers(response_headers, end_stream=end_stream)
         self._send_pending_data()
+        if stream._exchange_record is not None:
+            stream._exchange_record.commit(
+                CommitStep.FINAL_HEADERS, status=status,
+                end_stream=end_stream)
         return True
 
     def end_stream(self, stream_id, trailers=None):
@@ -728,7 +808,11 @@ class HTTP2ServerConnection:
                     incoming = b""
                 if not incoming:
                     self._closed = True
-                    self._abort_all_streams()
+                    if self.exchange_ledger is not None:
+                        self.exchange_ledger.commit_connection(
+                            CommitStep.PEER_INTERRUPT,
+                            scope=InterruptScope.CONNECTION, kind="eof")
+                    self._abort_all_streams(kind="eof")
                     return -1
                 try:
                     events = self.h2_conn.receive_data(incoming)
@@ -790,7 +874,8 @@ class HTTP2ServerConnection:
                     available = self._wait_for_flow_control_window(stream_id, deadline)
                     if available == 0:
                         # The peer is there but not reading.
-                        self.abort_stream(stream_id, HTTP2ErrorCode.CANCEL)
+                        self.abort_stream(stream_id, HTTP2ErrorCode.CANCEL,
+                                          kind="flow_control_timeout")
                         return False
                     if available < 0:
                         self.cleanup_stream(stream_id)
@@ -846,10 +931,16 @@ class HTTP2ServerConnection:
             trailer_headers.append((lname, str(value)))
 
         try:
-            # Send trailers with end_stream=True
+            # Send trailers with end_stream=True -- the second HEADERS block
+            # of the stream, committed only once it actually goes out.
             self.h2_conn.send_headers(stream_id, trailer_headers, end_stream=True)
             stream.send_trailers(trailer_headers)
             self._send_pending_data()
+            if stream._exchange_record is not None:
+                stream._exchange_record.commit(
+                    CommitStep.RESPONSE_TRAILERS,
+                    count=len(trailer_headers),
+                    names=[name for name, _ in trailer_headers])
             return True
         except (_h2_exceptions.StreamClosedError, _h2_exceptions.StreamIDTooLowError):
             # Stream was reset by client - clean up gracefully
@@ -889,12 +980,17 @@ class HTTP2ServerConnection:
         """
         self.abort_stream(stream_id, error_code)
 
-    def abort_stream(self, stream_id, error_code):
+    def abort_stream(self, stream_id, error_code, kind="abort"):
         """Reset a stream, drop it, and tell the peer.
 
         Safe on a stream h2 already closed and on a dead socket.
         """
         stream = self.streams.get(stream_id)
+        if stream is not None and stream._exchange_record is not None:
+            stream._exchange_record.commit(
+                CommitStep.PEER_INTERRUPT,
+                scope=InterruptScope.STREAM, kind=kind,
+                error_code=self._error_name(error_code))
         if stream is not None:
             stream.reset(error_code)
         self._reset_quietly(stream_id, error_code)
@@ -928,7 +1024,7 @@ class HTTP2ServerConnection:
             self._send_pending_data()
         except Exception:
             pass  # Best effort
-        self._abort_all_streams()
+        self._abort_all_streams(kind="connection_closed")
 
     def _send_pending_data(self):
         """Send any pending data from h2 to the socket."""
@@ -959,6 +1055,10 @@ class HTTP2ServerConnection:
         stream = self.streams.pop(stream_id, None)
         if stream is None:
             return
+        # The stream leaves the connection: freeze its exchange.  Nothing
+        # arriving later (late RST/WINDOW_UPDATE) can rewrite it.
+        if stream._exchange_record is not None:
+            stream._exchange_record.close()
         if stream.state is StreamState.CLOSED:
             pass
         elif not stream.response_complete:

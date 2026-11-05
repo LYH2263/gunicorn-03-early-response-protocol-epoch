@@ -43,6 +43,10 @@ class HTTP2Stream:
         self.stream_id = stream_id
         self.connection = connection
 
+        # Half-open exchange commit-step record, attached by the connection
+        # when the host keeps a ledger; None keeps the pinned behaviour.
+        self._exchange_record = None
+
         # Stream state
         self.state = StreamState.IDLE
 

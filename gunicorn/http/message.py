@@ -18,6 +18,7 @@ from gunicorn.http.errors import (
 )
 from gunicorn.http.errors import InvalidProxyLine, InvalidProxyHeader, ForbiddenProxyRequest
 from gunicorn.http.errors import InvalidSchemeHeaders
+from gunicorn.exchange import CommitStep, Plane, Protocol, record
 from gunicorn.util import bytes_to_str, split_request_uri
 
 
@@ -289,6 +290,9 @@ class HeaderPolicy:
 
 
 class Message(HeaderPolicy):
+    #: set on concrete request classes that own a half-open exchange.
+    _exchange_protocol = None
+
     def __init__(self, cfg, unreader, peer_addr):
         self.cfg = cfg
         self.unreader = unreader
@@ -301,6 +305,7 @@ class Message(HeaderPolicy):
         self.scheme = "https" if cfg.is_ssl else "http"
         self.must_close = False
         self._expected_100_continue = False
+        self._exchange_record = None
 
         # set headers limits
         self.limit_request_fields = cfg.limit_request_fields
@@ -316,9 +321,39 @@ class Message(HeaderPolicy):
         self.max_buffer_headers = self.limit_request_fields * \
             (max_header_field_size + 2) + 4
 
-        unused = self.parse(self.unreader)
-        self.unreader.unread(unused)
-        self.set_body_reader()
+        # Open this message's half-open exchange on the connection ledger
+        # *before* parsing, so the body framing decision below is recorded.
+        self._open_exchange()
+
+        try:
+            unused = self.parse(self.unreader)
+            self.unreader.unread(unused)
+            self.set_body_reader()
+        except BaseException:
+            # A failed parse never produces a served exchange; freeze it so
+            # late bytes from the peer cannot write through a dead record.
+            self._close_exchange()
+            raise
+
+    def _open_exchange(self):
+        protocol = self._exchange_protocol
+        if protocol is None:
+            return
+        ledger = getattr(self.unreader, "exchange_ledger", None)
+        if ledger is None:
+            return
+        key = getattr(self, "req_number", id(self))
+        self._exchange_record = ledger.open_exchange(key, protocol=protocol)
+        if self.body is not None:
+            self.body._exchange_record = self._exchange_record
+
+    def _close_exchange(self):
+        if self._exchange_record is not None:
+            self._exchange_record.close()
+
+    def _bind_body_exchange(self):
+        if self.body is not None and self._exchange_record is not None:
+            self.body._exchange_record = self._exchange_record
 
     def force_close(self):
         self.must_close = True
@@ -445,6 +480,8 @@ class Message(HeaderPolicy):
                 #  -> whatever happens next, remaining input must not be trusted
                 raise InvalidHeader("CONTENT-LENGTH", req=self)
             self.body = Body(ChunkedReader(self, self.unreader))
+            self._bind_body_exchange()
+            record(self, CommitStep.BODY_FRAMING, plane=Plane.CHUNKED)
         elif content_length is not None:
             try:
                 if str(content_length).isnumeric():
@@ -458,8 +495,18 @@ class Message(HeaderPolicy):
                 raise InvalidHeader("CONTENT-LENGTH", req=self)
 
             self.body = Body(LengthReader(self.unreader, content_length))
+            self._bind_body_exchange()
+            record(self, CommitStep.BODY_FRAMING, plane=Plane.LENGTH,
+                   length=content_length)
+            if content_length == 0:
+                record(self, CommitStep.BODY_END, plane=Plane.LENGTH,
+                       length=0)
         else:
+            # Neither Content-Length nor chunked: the request body ends at
+            # connection close (EOF plane).
             self.body = Body(EOFReader(self.unreader))
+            self._bind_body_exchange()
+            record(self, CommitStep.BODY_FRAMING, plane=Plane.EOF)
 
     def should_close(self):
         if self.must_close:
@@ -476,6 +523,8 @@ class Message(HeaderPolicy):
 
 
 class Request(Message):
+    _exchange_protocol = Protocol.H1
+
     def __init__(self, cfg, unreader, peer_addr, req_number=1):
         self.method = None
         self.uri = None
@@ -936,4 +985,14 @@ class Request(Message):
     def set_body_reader(self):
         super().set_body_reader()
         if isinstance(self.body.reader, EOFReader):
+            # WSGI pin: a request with neither Content-Length nor chunked
+            # framing is served with an empty body -- but the framing plane
+            # recognised on the wire was EOF (recorded by the base class),
+            # so the ledger keeps both facts, which is where this path forks
+            # from the ASGI parser that never recognises an EOF plane.
             self.body = Body(LengthReader(self.unreader, 0))
+            self._bind_body_exchange()
+            record(self, CommitStep.BODY_FRAMING, plane=Plane.EMPTY,
+                   derived_from=Plane.EOF)
+            record(self, CommitStep.BODY_END, plane=Plane.EMPTY,
+                   derived_from=Plane.EOF)

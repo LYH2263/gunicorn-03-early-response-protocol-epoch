@@ -20,6 +20,8 @@ from gunicorn.asgi.parser import (
     LimitRequestLine, LimitRequestHeaders, InvalidChunkExtension
 )
 from gunicorn.asgi.uwsgi import AsyncUWSGIRequest
+from gunicorn.exchange import (CommitStep, ExchangeLedger, Plane, Protocol,
+                               InterruptScope)
 from gunicorn.http.errors import NoMoreData
 from gunicorn.http2 import negotiation
 from gunicorn.http2.errors import HTTP2ConnectionError, HTTP2ErrorCode, HTTP2StreamError
@@ -177,7 +179,8 @@ class BodyReceiver:
     """
 
     __slots__ = ('_chunks', '_complete', '_body_finished', '_closed',
-                 '_body_wait_expired', '_waiter', 'request', 'protocol')
+                 '_body_wait_expired', '_waiter', 'request', 'protocol',
+                 '_exchange_record', '_pull_recorded')
 
     def __init__(self, request, protocol):
         self.request = request
@@ -193,6 +196,40 @@ class BodyReceiver:
         self._closed = False
         self._body_wait_expired = False
         self._waiter = None
+        # Half-open exchange commit-step record, attached when the host keeps
+        # a ledger; None keeps the pinned behaviour.
+        self._exchange_record = None
+        self._pull_recorded = False
+
+    @property
+    def _plane(self):
+        if getattr(self.request, "chunked", False):
+            return Plane.CHUNKED
+        if getattr(self.request, "content_length", None) is not None:
+            return Plane.LENGTH
+        return Plane.EMPTY
+
+    def _record_pull(self):
+        if self._exchange_record is None or self._pull_recorded:
+            return
+        self._pull_recorded = True
+        self._exchange_record.commit(CommitStep.BODY_PULL, plane=self._plane)
+
+    def _record_end(self):
+        if self._exchange_record is None:
+            return
+        if not self._exchange_record.committed(CommitStep.BODY_END):
+            self._exchange_record.commit(
+                CommitStep.BODY_END, plane=self._plane)
+
+    def _record_interrupt(self, kind):
+        if self._exchange_record is None:
+            return
+        if self._exchange_record.find(
+                CommitStep.PEER_INTERRUPT, kind=kind) is None:
+            self._exchange_record.commit(
+                CommitStep.PEER_INTERRUPT,
+                scope=InterruptScope.CONNECTION, kind=kind)
 
     def feed(self, chunk):
         """Feed a body chunk directly (called by parser callback)."""
@@ -208,6 +245,9 @@ class BodyReceiver:
     def signal_disconnect(self):
         """Signal that the client transport has gone away."""
         self._closed = True
+        # ASGI HTTP/1 disconnect is connection-scoped: the whole TCP
+        # connection is gone.
+        self._record_interrupt("transport_closed")
         self._wake_waiter()
 
     @property
@@ -232,6 +272,11 @@ class BodyReceiver:
             await self._wait_for_disconnect()
             return {"type": "http.disconnect"}
 
+        # The application is pulling the request body.  ASGI never answers
+        # Expect: 100-continue here (HTTP/1); only an explicit informational
+        # message from the app writes 1xx.
+        self._record_pull()
+
         # Fast path: chunk already available
         if self._chunks:
             return self._pop_chunk()
@@ -239,17 +284,20 @@ class BodyReceiver:
         # Body complete with no more chunks
         if self._complete:
             self._body_finished = True
+            self._record_end()
             return {"type": "http.request", "body": b"", "more_body": False}
 
         # No body expected
         if self.request.content_length == 0 and not self.request.chunked:
             self._complete = True
             self._body_finished = True
+            self._record_end()
             return {"type": "http.request", "body": b"", "more_body": False}
 
         # Check protocol closed state
         if self.protocol._closed:
             self._closed = True
+            self._record_interrupt("transport_closed")
             return {"type": "http.disconnect"}
 
         # Wait for body chunk to arrive via callback.  A real disconnect or a
@@ -265,6 +313,7 @@ class BodyReceiver:
         more = bool(self._chunks) or not self._complete
         if not more:
             self._body_finished = True
+            self._record_end()
         return {"type": "http.request", "body": chunk, "more_body": more}
 
     def _build_receive_result(self):
@@ -277,12 +326,17 @@ class BodyReceiver:
 
         if self._complete:
             self._body_finished = True
+            self._record_end()
             return {"type": "http.request", "body": b"", "more_body": False}
 
         # Wait returned without data and the message was not framed complete:
         # treat as a body-wait expiry rather than synthesizing end-of-body
         # (which would desync the next pipelined request).
         self._body_wait_expired = True
+        # A timeout is a peer interruption (surfaced as http.disconnect),
+        # but it must NOT be recorded as body end: more_body is never
+        # synthesized from a timeout.
+        self._record_interrupt("body_wait_timeout")
         return {"type": "http.disconnect"}
 
     async def _wait_for_data(self):
@@ -311,6 +365,7 @@ class BodyReceiver:
             # _closed stays False so any code keying on transport-disconnect
             # only is unaffected.
             self._body_wait_expired = True
+            self._record_interrupt("body_wait_timeout")
         finally:
             self._waiter = None
 
@@ -418,6 +473,16 @@ class ASGIProtocol(asyncio.Protocol):
 
         # WebSocket protocol (set during upgrade, receives data via callbacks)
         self._websocket = None
+
+        # One half-open exchange ledger per accepted connection.  HTTP/1
+        # requests open sequential exchanges on it; an upgraded HTTP/2
+        # connection reuses the same ledger, so HTTP/2 sibling streams share
+        # one causal sequence with the connection they were accepted on.
+        if getattr(self.cfg, "exchange_ledger", False):
+            self.exchange_ledger = ExchangeLedger(Protocol.ASGI_H1)
+        else:
+            self.exchange_ledger = None
+        self._exchange_seq = 0
 
     def connection_made(self, transport):
         """Called when a connection is established."""
@@ -616,8 +681,48 @@ class ASGIProtocol(asyncio.Protocol):
             self._callback_parser, is_ssl=self._is_ssl
         )
 
+        # Open this request's half-open exchange on the connection ledger.
+        if self.exchange_ledger is not None:
+            self._exchange_seq += 1
+            key = ("h1", self._exchange_seq)
+            record_obj = self.exchange_ledger.open_exchange(
+                key, protocol=Protocol.ASGI_H1)
+            self._current_request._exchange_record = record_obj
+            # ASGI HTTP/1 only notes Expect: 100-continue; nothing here
+            # auto-writes 100.  Record the selected framing plane: unlike
+            # WSGI HTTP/1 there is no EOF plane -- no Content-Length and no
+            # chunked framing completes the body at once as empty.
+            parser = self._callback_parser
+            if getattr(parser, "is_chunked", False):
+                record_obj.commit(CommitStep.BODY_FRAMING,
+                                  plane=Plane.CHUNKED)
+            elif parser.content_length is not None:
+                length = parser.content_length
+                record_obj.commit(CommitStep.BODY_FRAMING,
+                                  plane=Plane.LENGTH, length=length)
+                if length == 0:
+                    record_obj.commit(CommitStep.BODY_END,
+                                      plane=Plane.LENGTH, length=0)
+            else:
+                record_obj.commit(CommitStep.BODY_FRAMING,
+                                  plane=Plane.EMPTY, declared=False)
+                record_obj.commit(CommitStep.BODY_END,
+                                  plane=Plane.EMPTY, declared=False)
+            if self._current_request._expect_100_continue:
+                # ASGI never auto-writes 100 Continue; only the app's own
+                # http.response.informational can produce it.
+                record_obj.commit(CommitStep.INFORMATIONAL, status=100,
+                                  sent=False, trigger="expect_recorded")
+            # Inbound HTTP/1 trailers are validated by the parser but never
+            # handed to the application; record their disposition when the
+            # trailer section ends.
+            parser.on_request_trailers = self._on_request_trailers_dropped
+
         # Create body receiver for this request
         self._body_receiver = BodyReceiver(self._current_request, self)
+        if self.exchange_ledger is not None:
+            self._body_receiver._exchange_record = \
+                self._current_request._exchange_record
 
         if self._h2c_upgrade_ok:
             self._h2c_upgrade_settings = negotiation.upgrade_settings(
@@ -656,6 +761,20 @@ class ASGIProtocol(asyncio.Protocol):
         """Callback: request is fully received."""
         if self._body_receiver:
             self._body_receiver.set_complete()
+
+    def _on_request_trailers_dropped(self, names):
+        """Host hook: ASGI HTTP/1 request trailers were validated and dropped.
+
+        They never become an ASGI message; the ledger still records that the
+        trailer section existed (fork from WSGI HTTP/1 which records them on
+        req.trailers).
+        """
+        record_obj = None
+        if self._current_request is not None:
+            record_obj = self._current_request._exchange_record
+        if record_obj is not None:
+            record_obj.commit(CommitStep.REQUEST_TRAILERS,
+                              disposition="dropped", names=list(names))
 
     def _handle_h1c_exception(self, exc):
         """Handle gunicorn_h1c exceptions with appropriate HTTP status codes.
@@ -884,6 +1003,14 @@ class ASGIProtocol(asyncio.Protocol):
         self._h2c_cancel_timer()
         self.worker.nr_conns -= 1
 
+        # Connection-scoped peer interruption.  The HTTP/2 connection makes
+        # its own (more specific) entry through abort_streams_nowait(); on
+        # HTTP/1 and during preface sniffing it is recorded here.
+        if self.exchange_ledger is not None:
+            self.exchange_ledger.commit_connection(
+                CommitStep.PEER_INTERRUPT,
+                scope=InterruptScope.CONNECTION, kind="transport_lost")
+
         # Cancel keepalive timer
         self._cancel_keepalive_timer()
 
@@ -913,6 +1040,11 @@ class ASGIProtocol(asyncio.Protocol):
         if self._task and not self._task.done():
             grace_period = getattr(self.cfg, 'asgi_disconnect_grace_period', 3)
             if grace_period > 0:
+                if self.exchange_ledger is not None:
+                    self.exchange_ledger.commit_connection(
+                        CommitStep.PEER_INTERRUPT,
+                        scope=InterruptScope.CONNECTION,
+                        kind="disconnect_grace", grace_period=grace_period)
                 self.worker.loop.call_later(
                     grace_period,
                     self._cancel_task_if_pending
@@ -1156,6 +1288,15 @@ class ASGIProtocol(asyncio.Protocol):
         self._h2c_upgrade_settings = None
         self._h2c_upgrade_body = None
         self.transport.write(negotiation.UPGRADE_101)
+        # The 101 is the final fact of the outer HTTP/1 upgrade exchange;
+        # freeze it before the nested HTTP/2 stream-1 exchange starts, so
+        # nothing stream 1 commits can write through what the peer already
+        # observed at the HTTP/1 layer.
+        outer = getattr(request, "_exchange_record", None)
+        if outer is not None:
+            outer.commit(CommitStep.FINAL_HEADERS, status=101,
+                         upgrade="h2c")
+            outer.close()
         await self._handle_http2_connection(
             self.transport, None, upgrade=(settings, request, body)
         )
@@ -1351,12 +1492,14 @@ class ASGIProtocol(asyncio.Protocol):
                     if use_chunked:
                         # Send terminal chunk, combined with any buffered headers
                         if self._response_buffer:
+                            self._note_final_headers(request, response_status)
                             self._safe_write(self._response_buffer + b"0\r\n\r\n")
                             self._response_buffer = None
                         else:
                             self._safe_write(b"0\r\n\r\n")
                     elif self._response_buffer:
                         # Non-chunked empty response - flush headers
+                        self._note_final_headers(request, response_status)
                         self._safe_write(self._response_buffer)
                         self._response_buffer = None
                     response_complete = True
@@ -1394,6 +1537,10 @@ class ASGIProtocol(asyncio.Protocol):
                     response_status = 500
             return False
         finally:
+            # The served half-open exchange is finished, however it ended;
+            # freeze its record.  Bytes already written are not rolled back.
+            if request._exchange_record is not None:
+                request._exchange_record.close()
             # NOTE: do NOT clear self._body_receiver here.  _handle_connection
             # reads it after this method returns to enforce the keepalive
             # smuggling guard (refuse keepalive when the body was not framed
@@ -1543,6 +1690,13 @@ class ASGIProtocol(asyncio.Protocol):
 
         return scope
 
+    def _note_final_headers(self, request, status):
+        """Record the final-header commit point (first header byte write)."""
+        record_obj = getattr(request, "_exchange_record", None)
+        if (record_obj is not None
+                and not record_obj.committed(CommitStep.FINAL_HEADERS)):
+            record_obj.commit(CommitStep.FINAL_HEADERS, status=status)
+
     def _send_informational(self, status, headers, request):
         """Send an informational response (1xx) such as 103 Early Hints.
 
@@ -1555,7 +1709,12 @@ class ASGIProtocol(asyncio.Protocol):
         HTTP/1.0 clients do not support 1xx responses.
         """
         # Don't send informational responses to HTTP/1.0 clients
+        record_obj = getattr(request, "_exchange_record", None)
         if request.version < (1, 1):
+            if record_obj is not None:
+                record_obj.commit(CommitStep.INFORMATIONAL, status=status,
+                                  sent=False, reason="http/1.0_unsupported",
+                                  trigger="app")
             return
 
         reason = self._get_reason_phrase(status)
@@ -1570,6 +1729,9 @@ class ASGIProtocol(asyncio.Protocol):
 
         response += "\r\n"
         self._safe_write(response.encode("latin-1"))
+        if record_obj is not None:
+            record_obj.commit(CommitStep.INFORMATIONAL, status=status,
+                              sent=True, trigger="app")
 
     def _send_response_start(self, status, headers, request, close=False):
         """Send HTTP response status and headers.
@@ -1711,6 +1873,7 @@ class ASGIProtocol(asyncio.Protocol):
 
             # Combine with buffered headers if present
             if self._response_buffer:
+                self._note_final_headers(self._current_request, None)
                 self._safe_write(self._response_buffer + chunk_data)
                 self._response_buffer = None
             elif chunk_data:
@@ -1718,6 +1881,7 @@ class ASGIProtocol(asyncio.Protocol):
         else:
             # Non-chunked: combine headers + body or just body
             if self._response_buffer:
+                self._note_final_headers(self._current_request, None)
                 self._safe_write(self._response_buffer + body)
                 self._response_buffer = None
             elif body:
@@ -1733,6 +1897,7 @@ class ASGIProtocol(asyncio.Protocol):
             f"Connection: close\r\n"
             f"\r\n"
         )
+        self._note_final_headers(self._current_request, status)
         self._safe_write(response.encode("latin-1"))
         self._safe_write(body)
 
@@ -1821,17 +1986,23 @@ class ASGIProtocol(asyncio.Protocol):
             except (AttributeError, RuntimeError):
                 pass
 
-            # Create HTTP/2 connection handler
+            # Create HTTP/2 connection handler.  h2c upgrade shares the
+            # accepted connection's ledger so stream 1 is a nested exchange
+            # of the HTTP/1 upgrade request.
             h2_conn = AsyncHTTP2Connection(
-                self.cfg, reader, writer, peername
+                self.cfg, reader, writer, peername,
+                ledger=self.exchange_ledger,
             )
             if upgrade is None:
                 await h2_conn.initiate_connection()
                 self._h2_conn = h2_conn
             else:
                 settings, http1_req, body = upgrade
+                outer = getattr(http1_req, "_exchange_record", None)
                 upgraded = await h2_conn.initiate_upgrade(
-                    settings, http1_req, body)
+                    settings, http1_req, body,
+                    parent_exchange=outer,
+                )
                 self._h2_conn = h2_conn
                 self._start_http2_stream(upgraded, h2_conn, sockname, peername)
                 self.worker.nr += 1
@@ -1987,14 +2158,40 @@ class ASGIProtocol(asyncio.Protocol):
 
         # Track if we've finished receiving body
         body_received = False
+        pull_recorded = False
+
+        def _h2_record():
+            return getattr(stream, "_exchange_record", None)
+
+        def _note_pull():
+            nonlocal pull_recorded
+            rec = _h2_record()
+            if rec is not None and not pull_recorded:
+                rec.commit(CommitStep.BODY_PULL, plane=Plane.H2)
+                pull_recorded = True
+
+        def _note_body_end():
+            rec = _h2_record()
+            if (rec is not None
+                    and not rec.committed(CommitStep.BODY_END)):
+                rec.commit(CommitStep.BODY_END, plane=Plane.H2)
+
+        def _note_stream_interrupt(kind):
+            rec = _h2_record()
+            if (rec is not None
+                    and rec.find(CommitStep.PEER_INTERRUPT, kind=kind) is None):
+                rec.commit(CommitStep.PEER_INTERRUPT,
+                           scope=InterruptScope.STREAM, kind=kind)
 
         async def receive():  # pylint: disable=too-many-return-statements
             nonlocal body_received
 
             # The peer reset the stream or the connection is gone
             if stream is None or stream.disconnected:
+                _note_stream_interrupt("stream_gone")
                 return {"type": "http.disconnect"}
             if not body_received and stream.state is StreamState.CLOSED:
+                _note_stream_interrupt("stream_closed")
                 return {"type": "http.disconnect"}
 
             if body_received:
@@ -2006,12 +2203,15 @@ class ASGIProtocol(asyncio.Protocol):
                 if response_complete or peer_gone:
                     return {"type": "http.disconnect"}
                 await stream.wait_disconnect()
+                _note_stream_interrupt("stream_gone")
                 return {"type": "http.disconnect"}
 
             # First call: if body already complete (small requests), return it
             if not body_received and stream.request_complete and not stream._body_chunks:
                 body_received = True
                 body = stream.get_request_body()
+                _note_pull()
+                _note_body_end()
                 return {
                     "type": "http.request",
                     "body": body,
@@ -2020,20 +2220,40 @@ class ASGIProtocol(asyncio.Protocol):
 
             if stream.expect_continue and not stream.response_headers_sent:
                 # The client is waiting for a 100 before sending the body.
+                # In ASGI HTTP/2 this can still happen after
+                # http.response.start: start does not frame the final HEADERS
+                # block, so response_headers_sent is still False here.
                 stream.expect_continue = False
                 await h2_conn.send_informational(stream_id, 100, [])
+            elif stream.expect_continue and stream.response_headers_sent:
+                # First body frame already carried the final HEADERS; the
+                # 100 window is gone.
+                stream.expect_continue = False
+                rec = _h2_record()
+                if rec is not None:
+                    rec.commit(CommitStep.INFORMATIONAL, status=100,
+                               sent=False,
+                               reason="final_headers_committed")
 
             # Streaming: read next chunk, for at most cfg.timeout
+            _note_pull()
             try:
                 chunk = await asyncio.wait_for(
                     stream.read_body_chunk(),
                     timeout=self.cfg.timeout or None
                 )
-            except (asyncio.TimeoutError, HTTP2StreamError):
+            except asyncio.TimeoutError:
+                # Timeout becomes http.disconnect too, but it must not look
+                # like a completed body: no BODY_END is committed here.
+                _note_stream_interrupt("body_wait_timeout")
+                return {"type": "http.disconnect"}
+            except HTTP2StreamError:
+                _note_stream_interrupt("stream_reset")
                 return {"type": "http.disconnect"}
 
             if chunk is None:
                 body_received = True
+                _note_body_end()
                 return {
                     "type": "http.request",
                     "body": b"",
@@ -2044,6 +2264,7 @@ class ASGIProtocol(asyncio.Protocol):
             done = stream._body_complete and not stream._body_chunks
             if done:
                 body_received = True
+                _note_body_end()
 
             return {
                 "type": "http.request",
@@ -2061,6 +2282,11 @@ class ASGIProtocol(asyncio.Protocol):
 
         def gone():
             nonlocal peer_gone, response_complete
+            rec = getattr(stream, "_exchange_record", None)
+            if rec is not None:
+                rec.commit(CommitStep.PEER_INTERRUPT,
+                           scope=InterruptScope.STREAM,
+                           kind="rst_stream_gone")
             peer_gone = response_complete = True
             raise ClientDisconnected("HTTP/2 stream %d closed by the peer" % stream_id)
 

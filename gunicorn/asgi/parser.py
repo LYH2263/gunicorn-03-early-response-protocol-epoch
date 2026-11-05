@@ -140,6 +140,7 @@ class PythonProtocol:
         '_permit_unconventional_http_method', '_permit_unconventional_http_version',
         '_header_count',
         '_proxy_protocol', '_proxy_protocol_info', '_proxy_protocol_done',
+        'on_request_trailers', '_dropped_trailer_names',
     )
 
     def __init__(
@@ -200,6 +201,13 @@ class PythonProtocol:
         self._chunk_state = 'size'  # size, data, trailer
         self._chunk_size = 0
         self._chunk_remaining = 0
+
+        # Optional host callback fired once when the inbound trailer section
+        # ends: on_request_trailers(names).  ASGI HTTP/1 validates and then
+        # drops inbound trailers; this is how the disposition reaches the
+        # half-open exchange ledger without handing trailers to the app.
+        self.on_request_trailers = None
+        self._dropped_trailer_names = []
 
     def feed(self, data):
         """Process data, fire callbacks synchronously.
@@ -272,6 +280,8 @@ class PythonProtocol:
         self._chunk_size = 0
         self._chunk_remaining = 0
         self._header_count = 0
+        # on_request_trailers is a host hook that stays installed.
+        self._dropped_trailer_names = []
 
     def finish(self):
         """Mark parsing complete for EOF handling.
@@ -779,6 +789,7 @@ class PythonProtocol:
                 if self._chunk_size == 0:
                     # Final chunk - skip trailers
                     self._chunk_state = 'trailer'
+                    self._dropped_trailer_names = []
                 else:
                     self._chunk_remaining = self._chunk_size
                     self._chunk_state = 'data'
@@ -817,6 +828,12 @@ class PythonProtocol:
                 del self._buffer[:idx + 2]
 
                 if not line:
+                    # Empty line = end of trailers.  ASGI HTTP/1 never hands
+                    # inbound trailers to the application; tell the host hook
+                    # (the exchange ledger) that they were dropped.
+                    if self.on_request_trailers is not None:
+                        self.on_request_trailers(
+                            list(self._dropped_trailer_names))
                     # Empty line = end of trailers
                     self._state = 'complete'
                     self.is_complete = True
@@ -831,6 +848,8 @@ class PythonProtocol:
                     name = line[:colon].strip(b' \t').lower()
                     if name in RFC9110_6_5_1_FORBIDDEN_TRAILER:
                         raise InvalidHeaderName(name.decode('latin-1'))
+                    self._dropped_trailer_names.append(
+                        name.decode('latin-1'))
 
         return False
 
@@ -877,7 +896,7 @@ class CallbackRequest:
         'method', 'uri', 'path', 'query', 'fragment', 'version',
         'headers', 'headers_bytes', 'scheme', 'raw_path',
         'content_length', 'chunked', 'must_close',
-        'proxy_protocol_info', '_expect_100_continue',
+        'proxy_protocol_info', '_expect_100_continue', '_exchange_record',
     )
 
     def __init__(self):
@@ -896,6 +915,7 @@ class CallbackRequest:
         self.must_close = False
         self.proxy_protocol_info = None
         self._expect_100_continue = False
+        self._exchange_record = None
 
     @classmethod
     def from_parser(cls, parser, is_ssl=False):

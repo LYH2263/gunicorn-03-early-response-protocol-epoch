@@ -17,6 +17,7 @@ from gunicorn.http.message import (
 from gunicorn.http.errors import (
     InvalidHeader, InvalidRequestMethod, LimitRequestHeaders, LimitRequestLine,
 )
+from gunicorn.exchange import CommitStep, Plane, InterruptScope, record
 from gunicorn.http2.errors import HTTP2StreamError
 from gunicorn.http2.stream import StreamState
 from gunicorn.util import split_request_uri
@@ -38,6 +39,8 @@ class HTTP2Body:
         self._buf = b""
         self._eof = False
         self._closed = False
+        self._pull_recorded = False
+        self._suppression_recorded = False
         if isinstance(source, (bytes, bytearray)):
             self._stream = None
             self._buf = bytes(source)
@@ -51,14 +54,25 @@ class HTTP2Body:
             return None
         stream = self._stream
         while True:
+            if not self._pull_recorded:
+                # The application is pulling the request body: this is the
+                # commit point at which the blocking HTTP/2 machine answers
+                # Expect: 100-continue (unlike WSGI HTTP/1's pre-app 100).
+                record(stream, CommitStep.BODY_PULL, plane=Plane.H2)
+                self._pull_recorded = True
             chunk = stream.pop_chunk()
             if chunk is not None:
                 return chunk
             if stream.body_complete:
                 self._eof = True
+                record(stream, CommitStep.BODY_END, plane=Plane.H2)
                 return None
             connection = stream.connection
             if stream.state is StreamState.CLOSED or connection.is_closed:
+                # Stream-scoped interruption surface: HTTP2StreamError, not
+                # a connection-wide error.
+                record(stream, CommitStep.PEER_INTERRUPT,
+                       scope=InterruptScope.STREAM, kind="stream_closed")
                 raise HTTP2StreamError(
                     stream.stream_id,
                     "stream closed before its request body was complete")
@@ -67,10 +81,18 @@ class HTTP2Body:
                 # The client is waiting for a 100 before sending the body.
                 stream.expect_continue = False
                 connection.send_informational(stream.stream_id, 100, [])
+            elif (stream.expect_continue and stream.response_headers_sent
+                    and not self._suppression_recorded):
+                # The application wrote the final response first; the 100 is
+                # forfeited and must never hit the wire afterwards.
+                record(stream, CommitStep.INFORMATIONAL, status=100,
+                       sent=False, reason="final_headers_committed")
+                self._suppression_recorded = True
             if pump is None:
                 # Nothing here can wait for frames; the caller reads via
                 # read_body_chunk() instead.
                 self._eof = True
+                record(stream, CommitStep.BODY_END, plane=Plane.H2)
                 return None
             pump(stream.stream_id)
 

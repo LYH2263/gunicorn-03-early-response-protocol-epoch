@@ -1205,6 +1205,27 @@ class ReusePort(Setting):
         """
 
 
+class ExchangeLedger(Setting):
+    name = "exchange_ledger"
+    section = "Server Mechanics"
+    cli = ["--exchange-ledger"]
+    validator = validate_bool
+    action = "store_true"
+    default = False
+
+    desc = """\
+        Keep a per-connection ledger of the half-open request/response
+        exchange commit steps (1xx, request-body pulls and completion plane,
+        request/response trailers, final response headers and peer
+        interruption exits). One ledger is created per accepted connection;
+        on HTTP/2 every stream opens its own exchange on it. The ledger is
+        append-only -- committed bytes or frames are never rolled back --
+        and closing an inner or sibling exchange cannot rewrite what an outer
+        exchange already committed. Disabled by default; when disabled every
+        protocol machine keeps its existing behaviour.
+        """
+
+
 class Chdir(Setting):
     name = "chdir"
     section = "Server Mechanics"

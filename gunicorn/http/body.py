@@ -5,6 +5,7 @@
 import io
 import sys
 
+from gunicorn.exchange import (CommitStep, Plane, InterruptScope, record)
 from gunicorn.http.errors import (NoMoreData, ChunkMissingTerminator,
                                   InvalidChunkSize, InvalidChunkExtension,
                                   LimitRequestHeaders)
@@ -69,14 +70,32 @@ class ChunkedReader:
                 # RFC 9112 7.1.2: the last chunk (0 CRLF) must be followed by
                 # a CRLF-terminated trailer section. Hitting EOF before that
                 # means the chunked body was truncated, not cleanly ended.
+                record(self.req, CommitStep.PEER_INTERRUPT,
+                       scope=InterruptScope.CONNECTION,
+                       kind="chunk_missing_terminator")
                 raise ChunkMissingTerminator(b"") from None
             idx = buf.find(b"\r\n\r\n", searched)
             done = buf[:2] == b"\r\n"
         if done:
-            unreader.unread(bytes(buf[2:]))
+            tail = bytes(buf[2:])
+            unreader.unread(tail)
+            # Empty trailer section: the chunked body ends here; any bytes
+            # behind it belong to the next pipelined request and go back to
+            # the unreader.
+            record(self.req, CommitStep.BODY_END, plane=Plane.CHUNKED,
+                   trailers=False, unread_bytes=len(tail))
             return b""
         self.req.trailers = self.req.parse_headers(bytes(buf[:idx]), from_trailer=True)
-        unreader.unread(bytes(buf[idx + 4:]))
+        tail = bytes(buf[idx + 4:])
+        unreader.unread(tail)
+        # WSGI HTTP/1 pin: request trailers are parsed into req.trailers and
+        # the pipelined tail is returned to the unreader.
+        record(self.req, CommitStep.REQUEST_TRAILERS,
+               disposition="recorded",
+               names=[name for name, _ in self.req.trailers],
+               unread_bytes=len(tail))
+        record(self.req, CommitStep.BODY_END, plane=Plane.CHUNKED,
+               trailers=bool(self.req.trailers), unread_bytes=len(tail))
 
     def parse_chunked(self, unreader):
         (size, rest) = self.parse_chunk_size(unreader)
@@ -86,6 +105,9 @@ class ChunkedReader:
                 yield rest
                 rest = unreader.read()
                 if not rest:
+                    record(self.req, CommitStep.PEER_INTERRUPT,
+                           scope=InterruptScope.CONNECTION,
+                           kind="no_more_data")
                     raise NoMoreData()
             yield rest[:size]
             # Remove \r\n after chunk
@@ -96,6 +118,9 @@ class ChunkedReader:
                     break
                 rest += new_data
             if rest[:2] != b'\r\n':
+                record(self.req, CommitStep.PEER_INTERRUPT,
+                       scope=InterruptScope.CONNECTION,
+                       kind="chunk_missing_terminator")
                 raise ChunkMissingTerminator(rest[:2])
             (size, rest) = self.parse_chunk_size(unreader, data=rest[2:])
 
@@ -137,6 +162,9 @@ class ChunkedReader:
     def get_data(self, unreader, buf):
         data = unreader.read()
         if not data:
+            record(self.req, CommitStep.PEER_INTERRUPT,
+                   scope=InterruptScope.CONNECTION,
+                   kind="no_more_data")
             raise NoMoreData()
         buf.write(data)
 
@@ -144,6 +172,9 @@ class ChunkedReader:
         """Append one socket read to a bytearray, without copying it."""
         data = unreader.read()
         if not data:
+            record(self.req, CommitStep.PEER_INTERRUPT,
+                   scope=InterruptScope.CONNECTION,
+                   kind="no_more_data")
             raise NoMoreData()
         buf += data
 
@@ -220,6 +251,8 @@ class Body:
     def __init__(self, reader):
         self.reader = reader
         self.buf = io.BytesIO()
+        # Attached by Message when the connection keeps an exchange ledger.
+        self._exchange_record = None
 
     def __iter__(self):
         return self
@@ -241,6 +274,32 @@ class Body:
             return sys.maxsize
         return size
 
+    def _record_pull(self):
+        if self._exchange_record is None:
+            return
+        if not self._exchange_record.committed(CommitStep.BODY_PULL):
+            record(self, CommitStep.BODY_PULL,
+                   plane=type(self.reader).__name__)
+
+    def _maybe_record_end(self):
+        """Record the body-end step once the active plane is exhausted."""
+        if self._exchange_record is None:
+            return
+        if self._exchange_record.committed(CommitStep.BODY_END):
+            return
+        reader = self.reader
+        if isinstance(reader, ChunkedReader):
+            if reader.parser is None:
+                record(self, CommitStep.BODY_END, plane=Plane.CHUNKED,
+                       trailers=bool(getattr(reader.req, "trailers", None)))
+        elif isinstance(reader, LengthReader):
+            if reader.length == 0:
+                record(self, CommitStep.BODY_END, plane=Plane.LENGTH,
+                       length=0)
+        elif isinstance(reader, EOFReader):
+            if reader.finished:
+                record(self, CommitStep.BODY_END, plane=Plane.EOF)
+
     def read(self, size=None):
         size = self.getsize(size)
         if size == 0:
@@ -253,11 +312,17 @@ class Body:
             self.buf.write(rest)
             return ret
 
+        consulted_reader = False
         while size > self.buf.tell():
+            self._record_pull()
+            consulted_reader = True
             data = self.reader.read(1024)
             if not data:
                 break
             self.buf.write(data)
+
+        if consulted_reader:
+            self._maybe_record_end()
 
         data = self.buf.getvalue()
         ret, rest = data[:size], data[size:]
@@ -274,6 +339,7 @@ class Body:
         self.buf = io.BytesIO()
 
         ret = []
+        consulted_reader = False
         while 1:
             idx = data.find(b"\n", 0, size)
             idx = idx + 1 if idx >= 0 else size if len(data) >= size else 0
@@ -284,9 +350,14 @@ class Body:
 
             ret.append(data)
             size -= len(data)
+            self._record_pull()
+            consulted_reader = True
             data = self.reader.read(min(1024, size))
             if not data:
                 break
+
+        if consulted_reader:
+            self._maybe_record_end()
 
         return b"".join(ret)
 

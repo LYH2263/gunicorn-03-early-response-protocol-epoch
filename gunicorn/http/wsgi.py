@@ -10,6 +10,7 @@ import sys
 
 from gunicorn.http.message import TOKEN_RE
 from gunicorn.http.errors import ConfigurationProblem, InvalidHeader, InvalidHeaderName
+from gunicorn.exchange import CommitStep, record
 from gunicorn import SERVER_SOFTWARE, SERVER
 from gunicorn import util
 
@@ -154,6 +155,9 @@ def _make_early_hints_callback(req, sock, resp):
 
         # Don't send to HTTP/1.0 clients - they don't support 1xx responses
         if req.version < (1, 1):
+            record(req, CommitStep.INFORMATIONAL, status=103,
+                   sent=False, trigger="app",
+                   reason="http/1.0_unsupported")
             return
 
         # Build 103 response
@@ -181,6 +185,8 @@ def _make_early_hints_callback(req, sock, resp):
         response += b"\r\n"
 
         util.write(sock, response)
+        record(req, CommitStep.INFORMATIONAL, status=103, sent=True,
+               trigger="app")
 
     return send_early_hints
 
@@ -208,6 +214,8 @@ def create(req, sock, client, server, cfg, response_class=None,
         sock.send(b"HTTP/1.1 100 Continue\r\n\r\n")
         # rfc9112: Expect MUST be forwarded if the request is forwarded
         # N.B. gunicorn just sends at most one - application might send another
+        record(req, CommitStep.INFORMATIONAL, status=100, sent=True,
+               trigger="before_app")
 
     # add the headers to the environ
     for hdr_name, hdr_value in req.headers:
@@ -455,6 +463,11 @@ class Response:
         header_str = "%s\r\n" % "".join(tosend)
         util.write(self.sock, util.to_bytestring(header_str, "latin-1"))
         self.headers_sent = True
+        # The final response headers are now an observable wire fact.  This
+        # hook fires only on the HTTP/1 writer; HTTP2Response frames headers
+        # itself and commits on its own face.
+        record(self.req, CommitStep.FINAL_HEADERS,
+               status=self.status, chunked=self.chunked)
 
     def write(self, arg):
         self.send_headers()
@@ -554,4 +567,10 @@ class Response:
         if not self.headers_sent:
             self.send_headers()
         if self.chunked:
+            # Terminal empty chunk only: HTTP/1 WSGI never writes response
+            # trailer extensions here.
             util.write_chunk(self.sock, b"")
+        # The served half-open exchange is finished; freeze its record.  The
+        # bytes already written are not (and cannot be) rolled back.
+        if self.req._exchange_record is not None:
+            self.req._exchange_record.close()
