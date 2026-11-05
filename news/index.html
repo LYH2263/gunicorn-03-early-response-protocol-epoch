@@ -1,0 +1,3751 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://gunicorn.org/news/">
+      
+      
+        <link rel="prev" href="../reference/settings/">
+      
+      
+        <link rel="next" href="../2026-news/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/gunicorn.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+    
+    
+      
+        <title>Latest - Gunicorn</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../styles/overrides.css">
+    
+      <link rel="stylesheet" href="../assets/stylesheets/home.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#changelog" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Gunicorn" class="md-header__button md-logo" aria-label="Gunicorn" data-md-component="logo">
+      
+  <img src="../assets/gunicorn.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Gunicorn
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Latest
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="green" data-md-color-accent="teal"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/benoitc/gunicorn" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    benoitc/gunicorn
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../quickstart/" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../deploy/" class="md-tabs__link">
+          
+  
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../community/" class="md-tabs__link">
+          
+  
+  
+  Community
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../sponsor/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Support Us
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../reference/settings/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  News
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Gunicorn" class="md-nav__button md-logo" aria-label="Gunicorn" data-md-component="logo">
+      
+  <img src="../assets/gunicorn.svg" alt="logo">
+
+    </a>
+    Gunicorn
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/benoitc/gunicorn" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    benoitc/gunicorn
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../run/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deploy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deploy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/http2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTP/2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../asgi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ASGI Worker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dirty/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dirty Arbiters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/gunicornc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../uwsgi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    uWSGI Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../signals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Signals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../instrumentation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instrumentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../custom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Community
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../community/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sponsor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Support Us
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sponsor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Support Us
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/settings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    News
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    News
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Latest
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Latest
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#2622-2026-09-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        26.2.2 - 2026-09-06
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="26.2.2 - 2026-09-06">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2621-2026-09-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        26.2.1 - 2026-09-05
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="26.2.1 - 2026-09-05">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2620-2026-08-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        26.2.0 - 2026-08-24
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="26.2.0 - 2026-08-24">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2610-2026-08-18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        26.1.0 - 2026-08-18
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="26.1.0 - 2026-08-18">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-features_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#refactoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2600-2026-05-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        26.0.0 - 2026-05-05
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="26.0.0 - 2026-05-05">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breaking-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breaking Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-features_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#refactoring_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changes_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2530-2026-03-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        25.3.0 - 2026-03-26
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="25.3.0 - 2026-03-26">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changes_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2520-2026-03-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        25.2.0 - 2026-03-24
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="25.2.0 - 2026-03-24">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-features_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2510-2026-02-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        25.1.0 - 2026-02-13
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="25.1.0 - 2026-02-13">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-features_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changes_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2503-2026-02-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        25.0.3 - 2026-02-07
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="25.0.3 - 2026-02-07">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2502-2026-02-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        25.0.2 - 2026-02-06
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="25.0.2 - 2026-02-06">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changes_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2501-2026-02-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        25.0.1 - 2026-02-02
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="25.0.1 - 2026-02-02">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changes_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2500-2026-02-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        25.0.0 - 2026-02-01
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="25.0.0 - 2026-02-01">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-features_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#removals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Removals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changes_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2411-2026-01-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        24.1.1 - 2026-01-24
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="24.1.1 - 2026-01-24">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2410-2026-01-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        24.1.0 - 2026-01-23
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="24.1.0 - 2026-01-23">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-features_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2400-2026-01-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        24.0.0 - 2026-01-23
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="24.0.0 - 2026-01-23">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-features_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2300-2024-08-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        23.0.0 - 2024-08-10
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="23.0.0 - 2024-08-10">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breaking-changes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breaking changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2200-2024-04-17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        22.0.0 - 2024-04-17
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="22.0.0 - 2024-04-17">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breaking-changes_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breaking changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        History
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-news/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2024-news/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2024
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2023-news/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2023
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2021-news/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2021
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2020-news/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2020
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2019-news/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2019
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2018-news/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2018
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2017-news/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2017
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2016-news/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2016
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2015-news/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2015
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2014-news/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2014
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2013-news/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2013
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2012-news/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2012
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2011-news/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2011
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2010-news/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2010
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href=".." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="./" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    News
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<p><span id="news"></span></p>
+<h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h2 id="2622-2026-09-06">26.2.2 - 2026-09-06<a class="headerlink" href="#2622-2026-09-06" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes">Bug Fixes<a class="headerlink" href="#bug-fixes" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ASGI worker closed HTTP/1.1 connections without saying so</strong>: when the
+  worker would not reuse a connection (the client sent <code>Connection: close</code>,
+  keepalive is disabled, the worker is shutting down, or the response trips
+  <code>max_requests</code>) it closed the socket without a <code>Connection: close</code> header, so
+  a client treated the response as persistent and reused a socket the server
+  had already closed. The header is now sent whenever the connection will close
+  (<a href="https://github.com/benoitc/gunicorn/pull/3726">#3726</a>).</li>
+</ul>
+<h2 id="2621-2026-09-05">26.2.1 - 2026-09-05<a class="headerlink" href="#2621-2026-09-05" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_1">Bug Fixes<a class="headerlink" href="#bug-fixes_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><strong>ASGI worker dropped a pipelined request on keepalive</strong>: a second request
+  sent on a kept-alive connection while the worker was finishing the first was
+  left in the parser buffer, then discarded when the parser was reset between
+  requests, so the connection hung until the client timed out. The buffered
+  request is now recovered and served. Most visible with clients that pipeline
+  or with frameworks that respond with <code>Transfer-Encoding: chunked</code>.</p>
+</li>
+<li>
+<p><strong>ASGI worker returned 502 for the uWSGI protocol</strong>: with
+  <code>--worker-class asgi --protocol uwsgi</code> behind nginx <code>uwsgi_pass</code>, every
+  request failed with <code>Invalid uWSGI header: incomplete header</code>. The worker
+  set up the HTTP/1 parser instead of a uWSGI reader, so inbound bytes never
+  reached the uWSGI handler. The connection now starts a reader for the uWSGI
+  protocol, builds the request body for the app, and sets <code>raw_path</code>.</p>
+</li>
+<li>
+<p><strong>Chunked framing lines were read without a bound</strong>: a chunk-size line or
+  trailer section that never terminates was reread in full on every socket read
+  with no size limit, so one request could keep a worker busy without ever
+  reaching the application. These lines are now bounded by the existing request
+  limits and scanned incrementally, and a malformed chunked body answers
+  <code>400 Bad Request</code> with one log line instead of a traceback.</p>
+</li>
+<li>
+<p><strong>HTTP/2 follow-up to the review</strong>: a bad request now resets its own
+  stream instead of the connection; the request line and field limits and
+  the method token rule apply to HTTP/2 requests; forbidden trailers are
+  dropped; <code>Expect: 100-continue</code> is answered; <code>RST_STREAM</code> floods close the
+  connection with <code>ENHANCE_YOUR_CALM</code>; outbound frames respect the peer's
+  <code>SETTINGS_MAX_FRAME_SIZE</code>; a malformed <code>HTTP2-Settings</code> header refuses the
+  h2c upgrade before any <code>101</code> goes out and an oversized upgrade body is not
+  upgraded; <code>http2_initial_window_size</code> and <code>http2_max_concurrent_streams</code> are
+  bounded at startup, <code>http2_max_header_list_size = 0</code> means unlimited as
+  documented, <code>h3</code> is no longer accepted in <code>http_protocols</code>, and <code>h2</code> without
+  the h2 package is a configuration error. On <code>gthread</code> and <code>gevent</code> the
+  h2c-upgraded stream is cleaned up like any other, requests queued behind a
+  body read are served before the <code>max_requests</code> <code>GOAWAY</code>, which names the
+  last stream served, peer protocol errors are logged at debug, and responses
+  carry <code>Server</code> and <code>Date</code>. On the ASGI worker <code>send()</code> raises an <code>OSError</code>
+  once the peer is gone (ASGI 2.4), trailers announced on
+  <code>http.response.start</code> are sent after the body, no-body statuses drop their
+  framing headers, the body wait is bounded by <code>timeout</code>, write backpressure
+  reaches <code>writer.drain()</code>, and an idle connection closes after <code>keepalive</code>.
+  h2spec runs against every HTTP/2 worker in the docker suites.</p>
+</li>
+<li>
+<p><strong>HTTP/2 request bodies were buffered in full before dispatch</strong>: DATA
+  frames were kept in two buffers, copied twice more when the request was
+  built, and flow control credit went back to the peer as each frame arrived,
+  so a client that never sent END_STREAM could grow a worker without the
+  application being called. A request is now dispatched on its headers and
+  <code>wsgi.input</code> (or ASGI <code>receive()</code>) pulls the body from the stream as it
+  arrives, returning window credit only for what the application has read.
+  A peer can have no more than the receive window in flight per stream. A
+  body the application leaves unread is cut off with <code>RST_STREAM(NO_ERROR)</code>
+  once the response is sent. On the ASGI worker, streams on a connection are
+  served concurrently. Only listeners with <code>h2</code> in <code>http_protocols</code> were
+  affected.</p>
+</li>
+<li>
+<p><strong>HTTP/2 review fixes</strong>: a review of the HTTP/2 support found these, all
+  fixed on every h2-capable worker unless noted. A graceful <code>GOAWAY</code> from the
+  peer is honoured wherever it lands in a read: established streams finish,
+  later ones are refused, and no private h2 state is touched. Waiting for
+  send credit is bounded by <code>timeout</code> instead of a fixed five seconds; a
+  peer that stops reading gets <code>RST_STREAM(CANCEL)</code> and the application is
+  stopped rather than told the response succeeded. An application error
+  after the response headers went out resets the stream instead of sending a
+  second <code>HEADERS</code> block, which corrupted the HPACK table for every later
+  response. An empty final body chunk now ends the stream. On <code>gthread</code> and
+  <code>gevent</code>, frames read while waiting for credit are handled in order, an
+  idle connection is closed after <code>keepalive</code> and a body that stalls for
+  <code>timeout</code> is cancelled, so a peer can no longer pin a thread, and streams
+  the peer resets before they are served are dropped so <code>HEADERS+RST_STREAM</code>
+  floods cannot grow the worker. On the ASGI worker, <code>receive()</code> after the
+  body blocks until the peer goes away instead of spinning the event loop, a
+  reader paused under backpressure is resumed, and in-flight streams get the
+  disconnect grace period before they are cancelled.</p>
+</li>
+<li>
+<p>Worker timeout used to dump a 500 response onto a body that had already
+  started, because <code>sys.exit()</code> from the abort handler is a <code>BaseException</code>.
+  Once headers are out we just close the connection
+  (<a href="https://github.com/benoitc/gunicorn/issues/3410">#3410</a>).</p>
+</li>
+</ul>
+<h2 id="2620-2026-08-24">26.2.0 - 2026-08-24<a class="headerlink" href="#2620-2026-08-24" title="Permanent link">&para;</a></h2>
+<h3 id="new-features">New Features<a class="headerlink" href="#new-features" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Cleartext HTTP/2 (h2c)</strong>: <code>http2_cleartext</code> accepts <code>prior-knowledge</code>,
+  <code>upgrade</code>, <code>both</code> or <code>off</code> (the default). With <code>prior-knowledge</code>, a connection
+  opening with the HTTP/2 preface is served as HTTP/2, which is what a
+  TLS-terminating proxy in front of gunicorn needs to avoid dropping to HTTP/1.1
+  upstream. <code>upgrade</code> honours an HTTP/1.1 <code>Upgrade: h2c</code> request. Both work on
+  the gthread, gevent and ASGI workers. Only peers in <code>forwarded_allow_ips</code> are
+  considered; anything else from such a peer is refused with 400 rather than
+  silently downgraded. Each mechanism is enabled separately, so turning one on
+  does not turn the other on
+  (<a href="https://github.com/benoitc/gunicorn/issues/3489">#3489</a>,
+  <a href="https://github.com/benoitc/gunicorn/pull/3663">#3663</a>,
+  <a href="https://github.com/benoitc/gunicorn/pull/3711">#3711</a>).</li>
+</ul>
+<h3 id="security">Security<a class="headerlink" href="#security" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>HTTP/2 bypassed the header policy</strong>: <code>HTTP2Request</code> built its headers
+  straight from the stream, so nothing the HTTP/1 path enforces applied over
+  HTTP/2: the underscore and <code>header_map</code> policy, duplicate <code>Host</code> and
+  <code>Content-Type</code>, control characters in values, and the <code>forwarded_allow_ips</code>
+  trust gate. An untrusted client could set <code>SCRIPT_NAME</code> and forge <code>HTTP_*</code>
+  entries in the WSGI environ, and decide <code>wsgi.url_scheme</code> through <code>:scheme</code>.
+  The policy now lives on a mixin both request classes share, and the scheme is
+  derived from the transport
+  (<a href="https://github.com/benoitc/gunicorn/pull/3705">#3705</a>).</li>
+</ul>
+<h3 id="bug-fixes_2">Bug Fixes<a class="headerlink" href="#bug-fixes_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><strong>WSGI HTTP/2 responses were buffered whole</strong>: both WSGI workers collected the
+  entire body in memory before sending anything. They write through an
+  <code>HTTP2Response</code> now, so the body leaves as it is produced
+  (<a href="https://github.com/benoitc/gunicorn/pull/3709">#3709</a>).</p>
+</li>
+<li>
+<p><strong>No-body responses carried a body over HTTP/2</strong>: HEAD, 204 and 304 sent
+  application body bytes on all three workers, while the HTTP/1 path had always
+  dropped them per RFC 9110. They no longer do
+  (<a href="https://github.com/benoitc/gunicorn/pull/3709">#3709</a>,
+  <a href="https://github.com/benoitc/gunicorn/pull/3710">#3710</a>).</p>
+</li>
+<li>
+<p><strong>Events lost during flow-control waits</strong>: while blocked waiting for a
+  WINDOW_UPDATE, both HTTP/2 connections read from the socket and discarded
+  every event that was not a stream reset or connection termination, losing
+  requests and body data outright. They are queued for the main loop now
+  (<a href="https://github.com/benoitc/gunicorn/pull/3709">#3709</a>,
+  <a href="https://github.com/benoitc/gunicorn/pull/3710">#3710</a>).</p>
+</li>
+<li>
+<p><strong><code>sendfile()</code> on HTTP/2</strong>: it was guarded by <code>cfg.is_ssl</code>, which covered
+  HTTP/2 only for as long as HTTP/2 implied TLS. It is refused on HTTP/2
+  responses directly, so cleartext cannot bypass HTTP/2 framing
+  (<a href="https://github.com/benoitc/gunicorn/pull/3709">#3709</a>).</p>
+</li>
+<li>
+<p><strong>Request bodies dropped on <code>Upgrade</code> requests</strong>: on the ASGI worker with the
+  fast parser, any request carrying an <code>Upgrade</code> header reached the application
+  with an empty body, whatever the header's value and with HTTP/2 switched off.
+  The parser treated the header as meaning the rest of the connection was no
+  longer HTTP/1, so it never read the body it had just been told the length of.
+  Fixed in <code>gunicorn_h1c</code> 0.6.9, which the requirement below now pins
+  (<a href="https://github.com/benoitc/gunicorn/pull/3711">#3711</a>).</p>
+</li>
+</ul>
+<h3 id="changes">Changes<a class="headerlink" href="#changes" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Fast HTTP Parser</strong>: require <code>gunicorn_h1c &gt;= 0.6.9</code>, which adds
+  <code>remaining()</code> for recovering bytes pipelined behind a completed message, and
+  stops an <code>Upgrade</code> header from suppressing body parsing
+  (<a href="https://github.com/benoitc/gunicorn/pull/3711">#3711</a>).</li>
+</ul>
+<h3 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Describe <code>http_parser</code> in its own terms rather than as an ASGI-only setting;
+  it applies to the WSGI workers too. Thanks to
+  <a href="https://github.com/methane">@methane</a>
+  (<a href="https://github.com/benoitc/gunicorn/pull/3704">#3704</a>).</p>
+</li>
+<li>
+<p>Correct the default control socket path in the <code>gunicorn.c</code> guide. Thanks to
+  <a href="https://github.com/cormier">@cormier</a>
+  (<a href="https://github.com/benoitc/gunicorn/pull/3703">#3703</a>).</p>
+</li>
+<li>
+<p>State the supported Python version as 3.10+ in the README, matching
+  <code>requires-python</code>. Thanks to <a href="https://github.com/Rotzbua">@Rotzbua</a>
+  (<a href="https://github.com/benoitc/gunicorn/pull/3712">#3712</a>).</p>
+</li>
+<li>
+<p>Point CONTRIBUTING at the mkdocs settings reference instead of the retired
+  Sphinx path. Thanks to <a href="https://github.com/melbinjp">@melbinjp</a>
+  (<a href="https://github.com/benoitc/gunicorn/pull/3690">#3690</a>).</p>
+</li>
+<li>
+<p>Fix the sponsor logo path on the sponsor page
+  (<a href="https://github.com/benoitc/gunicorn/pull/3700">#3700</a>).</p>
+</li>
+</ul>
+<h2 id="2610-2026-08-18">26.1.0 - 2026-08-18<a class="headerlink" href="#2610-2026-08-18" title="Permanent link">&para;</a></h2>
+<h3 id="new-features_1">New Features<a class="headerlink" href="#new-features_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Glob patterns in <code>reload_extra_files</code></strong>: entries containing <code>*</code>, <code>?</code> or <code>[</code>
+  are treated as patterns, so <code>ui/*/config.json</code> watches every view's config
+  without listing them one by one. Patterns are re-expanded on every reload
+  check rather than once at startup, so a file created later starts being
+  watched without restarting gunicorn, and <code>**</code> recurses. A pattern matching
+  nothing warns instead of failing, since with live expansion it may match later
+  (<a href="https://github.com/benoitc/gunicorn/issues/1643">#1643</a>,
+  <a href="https://github.com/benoitc/gunicorn/pull/3662">#3662</a>).</li>
+</ul>
+<h3 id="security_1">Security<a class="headerlink" href="#security_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Dependency floors raised past known advisories</strong>: every declared floor was
+  checked against the advisory database. <code>tornado</code>, <code>h2</code>, <code>setuptools</code> and
+  <code>pymdown-extensions</code> permitted vulnerable versions and now require the first
+  clean release; <code>pytest</code> and <code>httpx</code> were unpinned and now carry floors. The
+  <code>tornado</code> example pinned <code>tornado&lt;6</code>, which was both the source of several
+  advisories and older than the <code>&gt;=6.5.0</code> the tornado worker needs, so the
+  example could not run as pinned.</li>
+</ul>
+<h3 id="bug-fixes_3">Bug Fixes<a class="headerlink" href="#bug-fixes_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><strong>SIGHUP did not reload the logger configuration</strong>: <code>Arbiter.reload()</code>
+  re-read the configuration file but kept using the logger built at startup,
+  calling only <code>reopen_files()</code> on its existing handlers. Changes to
+  <code>logconfig</code>, <code>logconfig_dict</code>, <code>logconfig_json</code> and <code>loglevel</code> were ignored
+  until a full restart, which in containers meant replacing the pod. The
+  existing logger now re-runs its setup on reload, so new handlers, formats
+  and levels take effect while the process identity and its listeners are
+  preserved, and re-running the setup no longer stacks duplicate syslog
+  handlers. An invalid log configuration on reload is not fatal either: the
+  error is reported on stderr, the previous working configuration is restored
+  and the master keeps running with it
+  (<a href="https://github.com/benoitc/gunicorn/issues/3353">#3353</a>).</p>
+</li>
+<li>
+<p><strong>Truncated chunked bodies accepted</strong>: RFC 9112 section 7.1.2 ends a chunked
+  body with <code>0 CRLF CRLF</code>, the second CRLF being the mandatory empty trailer
+  section. <code>ChunkedReader.parse_chunk_size()</code> swallowed the <code>NoMoreData</code> raised
+  while scanning for it, so a body cut short right after the last chunk line was
+  treated as complete instead of rejected. It now raises
+  <code>ChunkMissingTerminator</code>
+  (<a href="https://github.com/benoitc/gunicorn/issues/3382">#3382</a>,
+  <a href="https://github.com/benoitc/gunicorn/pull/3685">#3685</a>).</p>
+</li>
+<li>
+<p><strong><code>--spew</code> crashed on dynamically generated code</strong>: the trace hook indexed the
+  2-tuple returned by <code>inspect.getsourcelines()</code> by line number rather than
+  indexing the list of lines, so a frame with no <code>__file__</code> raised
+  <code>AttributeError: 'int' object has no attribute 'rstrip'</code> on line 1 and
+  <code>IndexError</code> beyond it. The tuple is now unpacked and offset by the source's
+  starting line (<a href="https://github.com/benoitc/gunicorn/issues/3344">#3344</a>,
+  <a href="https://github.com/benoitc/gunicorn/pull/3495">#3495</a>).</p>
+</li>
+<li>
+<p><strong>Duplicate <code>Host</code> and <code>Content-Type</code> headers accepted</strong>: RFC 9110 section 5.3
+  allows only one of each, and a repeat cannot be merged into a list, so the
+  message means different things to gunicorn and to anything downstream. Both
+  are now rejected with <code>InvalidHeader</code>. The check lives in the policy hook
+  shared by both parsers, so the pure-Python and fast parsers agree. Duplicate
+  <code>Content-Length</code> was already rejected and is unchanged
+  (<a href="https://github.com/benoitc/gunicorn/issues/3366">#3366</a>,
+  <a href="https://github.com/benoitc/gunicorn/pull/3548">#3548</a>).</p>
+</li>
+<li>
+<p><strong>Non-worker children reported as failed workers</strong>: <code>reap_workers()</code> reaps
+  every child through <code>waitpid(-1)</code>, including processes the kernel reparented
+  onto gunicorn when it runs as PID 1 in a container, but it logged the exit
+  status before checking whether the pid was ever a worker. An unrelated process
+  produced <code>Worker (pid:N) exited with code M</code> and triggered alerts. More
+  seriously, such a process exiting with code 3 or 4 raised <code>HaltServer</code> and shut
+  the server down. Ownership is now established first: the dirty arbiter is
+  reported as itself, unknown children are reaped silently at debug level, and
+  only real workers can halt the server
+  (<a href="https://github.com/benoitc/gunicorn/issues/3220">#3220</a>,
+  <a href="https://github.com/benoitc/gunicorn/pull/3566">#3566</a>).</p>
+</li>
+<li>
+<p><strong>Dirty arbiter exits were invisible on SIGCHLD</strong>: <code>handle_chld()</code> called
+  <code>reap_workers()</code> first, whose <code>waitpid(-1)</code> claimed the dirty arbiter before
+  <code>reap_dirty_arbiter()</code> could identify it, so the latter always hit <code>ECHILD</code> and
+  its reporting never ran. The dirty arbiter is now reaped first, and
+  <code>reap_workers()</code> recognises it if it exits mid-loop.</p>
+</li>
+<li>
+<p><strong>Dirty arbiter returned stale responses after a worker timeout</strong>: when a
+  request reached <code>dirty_timeout</code> the arbiter answered the client with a timeout
+  error but kept the worker connection open. The worker's late response was then
+  the first message waiting on that socket, so the next request routed to the
+  same worker received the previous request's result, and every request after it
+  stayed one response behind. The connection is now closed on timeout, so the
+  late answer is discarded with it
+  (<a href="https://github.com/benoitc/gunicorn/pull/3626">#3626</a>).</p>
+</li>
+<li>
+<p><strong>ASGI connection count leaked on server-initiated close</strong>: <code>nr_conns</code> was
+  only decremented in <code>connection_lost()</code>, behind a guard keyed on the same
+  flag <code>_close_transport()</code> sets first. Every close the server started (a
+  <code>Connection: close</code> response, a keepalive timeout, an error abort) leaked one
+  count, so <code>ASGIWorker._shutdown()</code> ran the full <code>graceful_timeout</code> and warned
+  about connections that were already gone. The guard now uses its own flag, so
+  the decrement and the rest of the cleanup run exactly once whichever side
+  closes first (<a href="https://github.com/benoitc/gunicorn/issues/3661">#3661</a>).</p>
+</li>
+<li>
+<p><strong>Inotify reloader on cwd-relative extra files</strong>: <code>reload_extra_files</code> entries
+  with no directory part (for example <code>.env</code>) produced an empty dirname, and
+  watching it raised <code>InotifyError</code> with <code>ENOENT</code>. The current directory is now
+  watched as <code>.</code> (<a href="https://github.com/benoitc/gunicorn/issues/3377">#3377</a>,
+  <a href="https://github.com/benoitc/gunicorn/pull/3667">#3667</a>).</p>
+</li>
+<li>
+<p><strong>StatsD zero-valued metrics</strong>: gauges, counters, histograms and timers
+  reporting <code>0</code> were silently dropped because the value was tested for
+  truthiness. Only <code>None</code> is skipped now
+  (<a href="https://github.com/benoitc/gunicorn/pull/3676">#3676</a>).</p>
+</li>
+<li>
+<p><strong>Spurious no-body warning from <code>sendfile()</code></strong>: a HEAD, 204 or 304 response
+  served through <code>sendfile()</code> warned about dropped body bytes even when the
+  file was empty and nothing was dropped. It now warns only when there are
+  bytes to drop, matching <code>write()</code>
+  (<a href="https://github.com/benoitc/gunicorn/pull/3684">#3684</a>).</p>
+</li>
+<li>
+<p><strong>Bare <code>except</code> in the gevent websocket example</strong>: narrowed to
+  <code>except Exception</code> (<a href="https://github.com/benoitc/gunicorn/pull/3683">#3683</a>).</p>
+</li>
+<li>
+<p><strong>ASGI <code>receive()</code> cancellation</strong>: Let <code>asyncio.CancelledError</code> propagate
+  from <code>BodyReceiver</code> instead of swallowing it and returning
+  <code>http.disconnect</code>. Frameworks that cancel their disconnect listener after
+  the response completes (Django) no longer see the cancel masked, so
+  <code>request_finished</code> fires and <code>close_old_connections()</code> runs. Fixes idle
+  database connections leaking since 25.1.0
+  (<a href="https://github.com/benoitc/gunicorn/issues/3627">#3627</a>,
+  <a href="https://github.com/benoitc/gunicorn/pull/3654">#3654</a>).</p>
+</li>
+<li>
+<p><strong>Control socket leak on SIGHUP reload</strong>: The control thread is now marked
+  ready once its loop and server are live, and the stop paths wait on that
+  readiness before scheduling shutdown. Reloads no longer leak one thread and
+  its selector fd plus unix socket per worker, which eventually raised
+  "too many open files"
+  (<a href="https://github.com/benoitc/gunicorn/issues/3648">#3648</a>).</p>
+</li>
+<li>
+<p><strong>WSGI body framing on HEAD/1xx/204/304</strong>: Mirror the ASGI strip-and-warn
+  behavior on the WSGI path. <code>Content-Length</code> is stripped on 1xx/204 per
+  RFC 9110 section 6.4.2, body bytes are dropped for no-body responses in
+  both <code>write()</code> and <code>sendfile()</code>, and a single warning is logged per request
+  (<a href="https://github.com/benoitc/gunicorn/issues/3413">#3413</a>).</p>
+</li>
+</ul>
+<h3 id="refactoring">Refactoring<a class="headerlink" href="#refactoring" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Pass log arguments to the logger instead of pre-formatting the worker
+  termination message in <code>Arbiter.reap_workers()</code>
+  (<a href="https://github.com/benoitc/gunicorn/pull/3678">#3678</a>).</li>
+</ul>
+<h3 id="changes_1">Changes<a class="headerlink" href="#changes_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><strong><code>packaging</code> is no longer a runtime dependency</strong>: it was only ever imported by
+  the gevent worker, to compare gevent's version. It moved to the <code>gevent</code> and
+  <code>testing</code> extras, so a plain <code>pip install gunicorn</code> pulls in nothing
+  (<a href="https://github.com/benoitc/gunicorn/pull/3643">#3643</a>).</p>
+</li>
+<li>
+<p><strong>Fast HTTP Parser</strong>: Require <code>gunicorn_h1c &gt;= 0.6.6</code>, which rejects duplicate
+  <code>Host</code> and <code>Content-Type</code> headers in the C parser itself. Gunicorn already
+  refuses them on both the WSGI and ASGI paths, so this changes nothing that is
+  reachable; it moves the rejection to where the bytes are read and lets the
+  ASGI corpus exercise those cases against the fast parser directly.</p>
+</li>
+</ul>
+<h2 id="2600-2026-05-05">26.0.0 - 2026-05-05<a class="headerlink" href="#2600-2026-05-05" title="Permanent link">&para;</a></h2>
+<h3 id="breaking-changes">Breaking Changes<a class="headerlink" href="#breaking-changes" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Eventlet worker removed</strong>: The <code>eventlet</code> worker class has been dropped.
+  Migrate to <code>gevent</code>, <code>gthread</code>, or <code>tornado</code>.</li>
+</ul>
+<h3 id="new-features_2">New Features<a class="headerlink" href="#new-features_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><strong>ASGI Framework Compatibility Suite</strong>: New end-to-end compatibility test
+  harness covering Starlette, FastAPI, Litestar, Quart, Sanic, and BlackSheep.
+  Current grid passes 438/444 tests (98%).</p>
+</li>
+<li>
+<p><strong>ASGI Test Suite Expansion</strong>: 134 additional ASGI unit tests covering
+  protocol semantics, lifespan, websockets, and chunked framing.</p>
+</li>
+</ul>
+<h3 id="security_2">Security<a class="headerlink" href="#security_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>HTTP/1.1 Request-Target Validation</strong> (RFC 9112 sections 3.2.3, 3.2.4):</li>
+<li>Reject <code>authority-form</code> request-target outside <code>CONNECT</code></li>
+<li>Reject <code>asterisk-form</code> request-target outside <code>OPTIONS</code></li>
+<li>
+<p>Reject <code>relative-reference</code> request-targets</p>
+</li>
+<li>
+<p><strong>Header Field Hardening</strong> (RFC 9110):</p>
+</li>
+<li>Reject control characters in header field-value (section 5.5)</li>
+<li>Reject forbidden trailer field-names (section 6.5.1)</li>
+<li>
+<p>Reject <code>Content-Length</code> list form (RFC 9112 section 6.3)</p>
+</li>
+<li>
+<p><strong>Request Smuggling Hardening</strong>:</p>
+</li>
+<li>Tighten keepalive gate and scope <code>finish_body</code> byte cap</li>
+<li>Keep <code>_body_receiver</code> alive across the keepalive smuggling gate so
+    pipelined requests cannot re-enter a closed body</li>
+<li>
+<p>Address parser/protocol findings from a six-point WSGI/ASGI audit</p>
+</li>
+<li>
+<p><strong>PROXY Protocol (ASGI)</strong>: Enforce <code>proxy_allow_ips</code> and tighten v1/v2
+  parsing in the ASGI callback parser.</p>
+</li>
+<li>
+<p><strong>Connection Draining</strong>: Drain the connection on close per RFC 9112
+  section 9.6 to prevent reset-on-close truncation.</p>
+</li>
+</ul>
+<h3 id="bug-fixes_4">Bug Fixes<a class="headerlink" href="#bug-fixes_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Body Framing on HEAD/204/304</strong>:</li>
+<li>Keep <code>Content-Length</code> on HEAD and 304 responses
+    (<a href="https://github.com/benoitc/gunicorn/pull/3621">#3621</a>)</li>
+<li>Drop body framing on HEAD/204/304 even when the framework set it</li>
+<li>
+<p>Warn once when an ASGI app emits a body for a no-body response</p>
+</li>
+<li>
+<p><strong>HTTP/2 ASGI</strong>:</p>
+</li>
+<li>Fix <code>_handle_stream_ended</code> to set <code>_body_complete</code> in the async HTTP/2
+    handler so request bodies finalize correctly on stream end</li>
+<li>
+<p>Add <code>InvalidChunkExtension</code> mapping and fast-parser support in ASGI
+    tests (<a href="https://github.com/benoitc/gunicorn/pull/3565">#3565</a>)</p>
+</li>
+<li>
+<p><strong>HTTP/1.1 100-Continue</strong>: Stop adding <code>Transfer-Encoding: chunked</code> to
+  100-Continue interim responses.</p>
+</li>
+<li>
+<p><strong>WebSocket Close Handshake</strong> (RFC 6455):</p>
+</li>
+<li>Comply with the close handshake state machine</li>
+<li>Close the transport after the close handshake completes</li>
+<li>
+<p>Fix binary send when the <code>text</code> key is <code>None</code></p>
+</li>
+<li>
+<p><strong>Early Hints</strong>: Validate headers in the <code>early_hints</code> callback to match
+  <code>process_headers</code>; pass only the header name to <code>InvalidHeader</code>
+  (<a href="https://github.com/benoitc/gunicorn/pull/3588">#3588</a>).</p>
+</li>
+<li>
+<p><strong>ASGI Framework Fixes</strong>:</p>
+</li>
+<li>Fix ASGI disconnect handling for Django-style apps</li>
+<li>Fix Litestar request handling (use raw ASGI receive for body/headers)</li>
+<li>Fix Litestar HTTP endpoints for compatibility tests</li>
+<li>Fix Quart headers endpoint to normalize keys to lowercase</li>
+<li>Fix Quart WebSocket close test app (missing <code>accept()</code>)</li>
+<li>Fix duplicate <code>Transfer-Encoding</code> header for BlackSheep streaming</li>
+</ul>
+<h3 id="refactoring_1">Refactoring<a class="headerlink" href="#refactoring_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Split <code>BodyReceiver._closed</code> into separate transport and body-wait flags
+  for clearer keepalive/EOF semantics.</li>
+</ul>
+<h3 id="changes_2">Changes<a class="headerlink" href="#changes_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><strong>Fast HTTP Parser</strong>: Require <code>gunicorn_h1c &gt;= 0.6.5</code>. Drop the last
+  <code>python_only</code> test markers; the C extension is now used wherever
+  available (CPython only; PyPy continues to use the Python parser).</p>
+</li>
+<li>
+<p><strong>Test Dependencies</strong>: Add <code>h2</code> and <code>uvloop</code> to the <code>testing</code> extra;
+  remove <code>eventlet</code>.</p>
+</li>
+<li>
+<p><strong>Docker Build</strong>: Bump GitHub Actions <code>docker/setup-qemu-action</code>,
+  <code>docker/setup-buildx-action</code>, <code>docker/login-action</code>,
+  <code>docker/build-push-action</code>, and <code>docker/metadata-action</code> to current
+  major versions.</p>
+</li>
+</ul>
+<hr />
+<h2 id="2530-2026-03-26">25.3.0 - 2026-03-26<a class="headerlink" href="#2530-2026-03-26" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_5">Bug Fixes<a class="headerlink" href="#bug-fixes_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><strong>HTTP/2 ASGI Body Duplication</strong>: Fix request body being received twice in HTTP/2
+  ASGI requests, causing JSON parsing errors with "Extra data" messages
+  (<a href="https://github.com/benoitc/gunicorn/issues/3558">#3558</a>)</p>
+</li>
+<li>
+<p><strong>ASGI Chunked EOF Handling</strong>: Add <code>finish()</code> method to callback parser to handle
+  chunked encoding edge case where connection closes before final CRLF after zero-chunk</p>
+</li>
+<li>
+<p><strong>HTTP/2 Documentation</strong>: Fix <code>http_protocols</code> examples to use comma-separated string
+  instead of list syntax (<a href="https://github.com/benoitc/gunicorn/issues/3561">#3561</a>)</p>
+</li>
+<li>
+<p><strong>Chunked Encoding</strong>: Reject chunk extensions containing bare CR bytes per RFC 9112
+  (<a href="https://github.com/benoitc/gunicorn/discussions/3556">#3556</a>)</p>
+</li>
+<li>
+<p><strong>Request Line Limit</strong>: Fix <code>--limit-request-line 0</code> to mean unlimited as documented,
+  instead of using default maximum. Works with both Python and fast C parser.
+  (<a href="https://github.com/benoitc/gunicorn/issues/3563">#3563</a>)</p>
+</li>
+</ul>
+<h3 id="security_3">Security<a class="headerlink" href="#security_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ASGI Parser Header Validation</strong>: Add security checks per RFC 9110/9112:</li>
+<li>Reject duplicate Content-Length headers</li>
+<li>Reject requests with both Content-Length and Transfer-Encoding</li>
+<li>Reject chunked transfer encoding in HTTP/1.0</li>
+<li>Reject stacked chunked encoding</li>
+<li>Validate Transfer-Encoding values</li>
+<li>Strict chunk size validation</li>
+</ul>
+<h3 id="changes_3">Changes<a class="headerlink" href="#changes_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><strong>Fast HTTP Parser</strong>: Update to gunicorn_h1c &gt;= 0.6.3 for <code>asgi_headers</code> property
+  and <code>InvalidChunkExtension</code> validation for bare CR rejection</p>
+</li>
+<li>
+<p><strong>ASGI PROXY Protocol</strong>: Add PROXY protocol v1/v2 support to callback parser</p>
+</li>
+<li>
+<p><strong>Docker Images</strong>: Update to Python 3.14</p>
+</li>
+</ul>
+<hr />
+<h2 id="2520-2026-03-24">25.2.0 - 2026-03-24<a class="headerlink" href="#2520-2026-03-24" title="Permanent link">&para;</a></h2>
+<h3 id="new-features_3">New Features<a class="headerlink" href="#new-features_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Fast HTTP Parser (gunicorn_h1c 0.6.0)</strong>: Integrate new exception types and limit
+  parameters from gunicorn_h1c 0.6.0 for both WSGI and ASGI workers</li>
+<li>Requires gunicorn_h1c &gt;= 0.6.0 for <code>http_parser='fast'</code></li>
+<li>Falls back to Python parser in <code>auto</code> mode if version not met</li>
+<li>Proper HTTP status codes for limit errors (414, 431)</li>
+</ul>
+<h3 id="bug-fixes_6">Bug Fixes<a class="headerlink" href="#bug-fixes_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><strong>uWSGI Async Workers</strong>: Fix <code>InvalidUWSGIHeader: incomplete header</code> error
+  when using gevent or gthread workers with uwsgi protocol behind nginx.
+  (<a href="https://github.com/benoitc/gunicorn/issues/3552">#3552</a>,
+  <a href="https://github.com/benoitc/gunicorn/pull/3554">PR #3554</a>)</p>
+</li>
+<li>
+<p><strong>FileWrapper Iterator Protocol</strong>: Add <code>__iter__</code> and <code>__next__</code> methods to
+  <code>FileWrapper</code> for full PEP 3333 compliance. Previously only supported old-style
+  <code>__getitem__</code> iteration which broke code explicitly using <code>iter()</code> or <code>next()</code>.
+  (<a href="https://github.com/benoitc/gunicorn/issues/3396">#3396</a>,
+  <a href="https://github.com/benoitc/gunicorn/pull/3550">PR #3550</a>)</p>
+</li>
+</ul>
+<h3 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ASGI HTTP Parser Optimizations</strong>: Improve ASGI worker HTTP parsing performance</li>
+<li>Callback-based parsing with direct <code>bytearray</code> buffer operations</li>
+<li>Use <code>bytearray.find()</code> directly instead of converting to bytes first</li>
+<li>Use index-based iteration for header parsing instead of <code>list.pop(0)</code> (O(1) vs O(n))</li>
+</ul>
+<hr />
+<h2 id="2510-2026-02-13">25.1.0 - 2026-02-13<a class="headerlink" href="#2510-2026-02-13" title="Permanent link">&para;</a></h2>
+<h3 id="new-features_4">New Features<a class="headerlink" href="#new-features_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Control Interface (gunicornc)</strong>: Add interactive control interface for managing
+  running Gunicorn instances, similar to birdc for BIRD routing daemon
+  (<a href="https://github.com/benoitc/gunicorn/pull/3505">PR #3505</a>)</li>
+<li>Unix socket-based communication with JSON protocol</li>
+<li>Interactive mode with readline support and command history</li>
+<li>Commands: <code>show all/workers/dirty/config/stats/listeners</code></li>
+<li>Worker management: <code>worker add/remove/kill</code>, <code>dirty add/remove</code></li>
+<li>Server control: <code>reload</code>, <code>reopen</code>, <code>shutdown</code></li>
+<li>New settings: <code>--control-socket</code>, <code>--control-socket-mode</code>, <code>--no-control-socket</code></li>
+<li>New CLI tool: <code>gunicornc</code> for connecting to control socket</li>
+<li>
+<p>See <a href="../guides/gunicornc/">Control Interface Guide</a> for details</p>
+</li>
+<li>
+<p><strong>Dirty Stash</strong>: Add global shared state between workers via <code>dirty.stash</code>
+  (<a href="https://github.com/benoitc/gunicorn/pull/3503">PR #3503</a>)</p>
+</li>
+<li>In-memory key-value store accessible by all workers</li>
+<li>Supports get, set, delete, clear, keys, and has operations</li>
+<li>
+<p>Useful for sharing state like feature flags, rate limits, or cached data</p>
+</li>
+<li>
+<p><strong>Dirty Binary Protocol</strong>: Implement efficient binary protocol for dirty arbiter IPC
+  using TLV (Type-Length-Value) encoding
+  (<a href="https://github.com/benoitc/gunicorn/pull/3500">PR #3500</a>)</p>
+</li>
+<li>More efficient than JSON for binary data</li>
+<li>Supports all Python types: str, bytes, int, float, bool, None, list, dict</li>
+<li>
+<p>Better performance for large payloads</p>
+</li>
+<li>
+<p><strong>Dirty TTIN/TTOU Signals</strong>: Add dynamic worker scaling for dirty arbiters
+  (<a href="https://github.com/benoitc/gunicorn/pull/3504">PR #3504</a>)</p>
+</li>
+<li>Send SIGTTIN to increase dirty workers</li>
+<li>Send SIGTTOU to decrease dirty workers</li>
+<li>Respects minimum worker constraints from app configurations</li>
+</ul>
+<h3 id="changes_4">Changes<a class="headerlink" href="#changes_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ASGI Worker</strong>: Promoted from beta to stable</li>
+<li><strong>Dirty Arbiters</strong>: Now marked as beta feature</li>
+</ul>
+<h3 id="documentation_1">Documentation<a class="headerlink" href="#documentation_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix Markdown formatting in /configure documentation</li>
+</ul>
+<hr />
+<h2 id="2503-2026-02-07">25.0.3 - 2026-02-07<a class="headerlink" href="#2503-2026-02-07" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_7">Bug Fixes<a class="headerlink" href="#bug-fixes_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Fix RuntimeError when StopIteration is raised inside ASGI response body
+  coroutine (PEP 479 compliance)</p>
+</li>
+<li>
+<p>Fix deprecation warning for passing maxsplit as positional argument in
+  <code>re.split()</code> (Python 3.13+)</p>
+</li>
+</ul>
+<hr />
+<h2 id="2502-2026-02-06">25.0.2 - 2026-02-06<a class="headerlink" href="#2502-2026-02-06" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_8">Bug Fixes<a class="headerlink" href="#bug-fixes_8" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Fix ASGI concurrent request failures through nginx proxy by normalizing
+  sockaddr tuples to handle both 2-tuple (IPv4) and 4-tuple (IPv6) formats
+  (<a href="https://github.com/benoitc/gunicorn/pull/3485">PR #3485</a>)</p>
+</li>
+<li>
+<p>Fix graceful disconnect handling for ASGI worker to properly handle
+  client disconnects without raising exceptions
+  (<a href="https://github.com/benoitc/gunicorn/pull/3485">PR #3485</a>)</p>
+</li>
+<li>
+<p>Fix lazy import of dirty module for gevent compatibility - prevents
+  import errors when concurrent.futures is imported before gevent monkey-patching
+  (<a href="https://github.com/benoitc/gunicorn/pull/3483">PR #3483</a>)</p>
+</li>
+</ul>
+<h3 id="changes_5">Changes<a class="headerlink" href="#changes_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Refactor: Extract <code>_normalize_sockaddr</code> utility function for consistent
+  socket address handling across workers</p>
+</li>
+<li>
+<p>Add license headers to all Python source files</p>
+</li>
+<li>
+<p>Update copyright year to 2026 in LICENSE and NOTICE files</p>
+</li>
+</ul>
+<hr />
+<h2 id="2501-2026-02-02">25.0.1 - 2026-02-02<a class="headerlink" href="#2501-2026-02-02" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_9">Bug Fixes<a class="headerlink" href="#bug-fixes_9" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix ASGI streaming responses (SSE) hanging: add chunked transfer encoding for
+  HTTP/1.1 responses without Content-Length header. Without chunked encoding,
+  clients wait for connection close to determine end-of-response.</li>
+</ul>
+<h3 id="changes_6">Changes<a class="headerlink" href="#changes_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Update celery_alternative example to use FastAPI with native ASGI worker and
+  uvloop for async task execution</li>
+</ul>
+<h3 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Add ASGI compliance test suite with Docker-based integration tests covering HTTP,
+  WebSocket, streaming, lifespan, framework integration (Starlette, FastAPI),
+  HTTP/2, and concurrency scenarios</li>
+</ul>
+<hr />
+<h2 id="2500-2026-02-01">25.0.0 - 2026-02-01<a class="headerlink" href="#2500-2026-02-01" title="Permanent link">&para;</a></h2>
+<h3 id="new-features_5">New Features<a class="headerlink" href="#new-features_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Dirty Arbiters</strong>: Separate process pool for executing long-running, blocking
+  operations (AI model loading, heavy computation) without blocking HTTP workers
+  (<a href="https://github.com/benoitc/gunicorn/pull/3460">PR #3460</a>)</li>
+<li>Inspired by Erlang's dirty schedulers</li>
+<li>Asyncio-based with Unix socket IPC</li>
+<li>Stateful workers that persist loaded resources</li>
+<li>New settings: <code>--dirty-app</code>, <code>--dirty-workers</code>, <code>--dirty-timeout</code>,
+    <code>--dirty-threads</code>, <code>--dirty-graceful-timeout</code></li>
+<li>
+<p>Lifecycle hooks: <code>on_dirty_starting</code>, <code>dirty_post_fork</code>,
+    <code>dirty_worker_init</code>, <code>dirty_worker_exit</code></p>
+</li>
+<li>
+<p><strong>Per-App Worker Allocation for Dirty Arbiters</strong>: Control how many dirty workers
+  load each app for memory optimization with heavy models
+  (<a href="https://github.com/benoitc/gunicorn/pull/3473">PR #3473</a>)</p>
+</li>
+<li>Set <code>workers</code> class attribute on DirtyApp (e.g., <code>workers = 2</code>)</li>
+<li>Or use config format <code>module:class:N</code> (e.g., <code>myapp:HeavyModel:2</code>)</li>
+<li>Requests automatically routed to workers with the target app</li>
+<li>New exception <code>DirtyNoWorkersAvailableError</code> for graceful error handling</li>
+<li>
+<p>Example: 8 workers × 10GB model = 80GB → with <code>workers=2</code>: 20GB (75% savings)</p>
+</li>
+<li>
+<p><strong>HTTP/2 Support (Beta)</strong>: Native HTTP/2 (RFC 7540) support for improved performance
+  with modern clients (<a href="https://github.com/benoitc/gunicorn/pull/3468">PR #3468</a>)</p>
+</li>
+<li>Multiplexed streams over a single connection</li>
+<li>Header compression (HPACK)</li>
+<li>Flow control and stream prioritization</li>
+<li>Works with gthread, gevent, and ASGI workers</li>
+<li>New settings: <code>--http-protocols</code>, <code>--http2-max-concurrent-streams</code>,
+    <code>--http2-initial-window-size</code>, <code>--http2-max-frame-size</code>, <code>--http2-max-header-list-size</code></li>
+<li>Requires SSL/TLS and h2 library: <code>pip install gunicorn[http2]</code></li>
+<li>See <a href="../guides/http2/">HTTP/2 Guide</a> for details</li>
+<li>
+<p>New example: <code>examples/http2_gevent/</code> with Docker and tests</p>
+</li>
+<li>
+<p><strong>HTTP 103 Early Hints</strong>: Support for RFC 8297 Early Hints to enable browsers to
+  preload resources before the final response
+  (<a href="https://github.com/benoitc/gunicorn/pull/3468">PR #3468</a>)</p>
+</li>
+<li>WSGI: <code>environ['wsgi.early_hints'](headers)</code> callback</li>
+<li>ASGI: <code>http.response.informational</code> message type</li>
+<li>
+<p>Works with both HTTP/1.1 and HTTP/2</p>
+</li>
+<li>
+<p><strong>uWSGI Protocol for ASGI Worker</strong>: The ASGI worker now supports receiving requests
+  via the uWSGI binary protocol from nginx
+  (<a href="https://github.com/benoitc/gunicorn/pull/3467">PR #3467</a>)</p>
+</li>
+</ul>
+<h3 id="bug-fixes_10">Bug Fixes<a class="headerlink" href="#bug-fixes_10" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Fix HTTP/2 ALPN negotiation for the gevent worker when
+  <code>do_handshake_on_connect</code> is False (the default). The TLS handshake is now
+  explicitly performed before checking <code>selected_alpn_protocol()</code>.</p>
+</li>
+<li>
+<p>Fix setproctitle initialization with systemd socket activation
+  (<a href="https://github.com/benoitc/gunicorn/issues/3465">#3465</a>)</p>
+</li>
+<li>
+<p>Fix <code>Expect: 100-continue</code> handling: ignore the header for HTTP/1.0 requests
+  since 100-continue is only valid for HTTP/1.1+
+  (<a href="https://github.com/benoitc/gunicorn/pull/3463">PR #3463</a>)</p>
+</li>
+<li>
+<p>Fix missing <code>_expected_100_continue</code> attribute in UWSGIRequest</p>
+</li>
+<li>
+<p>Disable setproctitle on macOS to prevent segfaults during process title updates</p>
+</li>
+<li>
+<p>Publish full exception traceback when the application fails to load
+  (<a href="https://github.com/benoitc/gunicorn/issues/3462">#3462</a>)</p>
+</li>
+<li>
+<p>Fix ASGI: quick shutdown on SIGINT/SIGQUIT, graceful on SIGTERM</p>
+</li>
+</ul>
+<h3 id="removals">Removals<a class="headerlink" href="#removals" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Eventlet Worker</strong>: The <code>eventlet</code> worker has been removed.  Eventlet itself
+  is <a href="https://eventlet.readthedocs.io/en/latest/asyncio/migration.html">no longer actively maintained</a>;
+  the worker was deprecated in 25.x and is now gone.  Migrate to <code>gevent</code>,
+  <code>gthread</code>, or one of the ASGI workers.</li>
+</ul>
+<h3 id="changes_7">Changes<a class="headerlink" href="#changes_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Remove obsolete Makefile targets
+  (<a href="https://github.com/benoitc/gunicorn/pull/3471">PR #3471</a>)</li>
+</ul>
+<hr />
+<h2 id="2411-2026-01-24">24.1.1 - 2026-01-24<a class="headerlink" href="#2411-2026-01-24" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_11">Bug Fixes<a class="headerlink" href="#bug-fixes_11" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix <code>forwarded_allow_ips</code> and <code>proxy_allow_ips</code> to remain as strings for backward
+  compatibility with external tools like uvicorn. Network validation now uses strict
+  mode to detect invalid CIDR notation (e.g., <code>192.168.1.1/24</code> where host bits are set)
+  (<a href="https://github.com/benoitc/gunicorn/issues/3458">#3458</a>,
+  <a href="https://github.com/benoitc/gunicorn/pull/3459">PR #3459</a>)</li>
+</ul>
+<hr />
+<h2 id="2410-2026-01-23">24.1.0 - 2026-01-23<a class="headerlink" href="#2410-2026-01-23" title="Permanent link">&para;</a></h2>
+<h3 id="new-features_6">New Features<a class="headerlink" href="#new-features_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Official Docker Image</strong>: Gunicorn now publishes official Docker images to GitHub
+  Container Registry at <code>ghcr.io/benoitc/gunicorn</code></li>
+<li>Based on Python 3.12 slim image</li>
+<li>Uses recommended worker formula (2 × CPU + 1)</li>
+<li>
+<p>Configurable via environment variables</p>
+</li>
+<li>
+<p><strong>PROXY Protocol v2 Support</strong>: Extended PROXY protocol implementation to support
+  the binary v2 format in addition to the existing text-based v1 format</p>
+</li>
+<li>New <code>--proxy-protocol</code> modes: <code>off</code>, <code>v1</code>, <code>v2</code>, <code>auto</code></li>
+<li>
+<p>Works with HAProxy, AWS NLB/ALB, and other PROXY protocol v2 sources</p>
+</li>
+<li>
+<p><strong>CIDR Network Support</strong>: <code>--forwarded-allow-ips</code> and <code>--proxy-allow-from</code> now
+  accept CIDR notation (e.g., <code>192.168.0.0/16</code>) for specifying trusted networks</p>
+</li>
+<li>
+<p><strong>Socket Backlog Metric</strong>: New <code>gunicorn.socket.backlog</code> gauge metric reports
+  the current socket backlog size on Linux systems</p>
+</li>
+<li>
+<p><strong>InotifyReloader Enhancement</strong>: The inotify-based reloader now watches newly
+  imported modules, not just those loaded at startup</p>
+</li>
+</ul>
+<h3 id="bug-fixes_12">Bug Fixes<a class="headerlink" href="#bug-fixes_12" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix signal handling regression where SIGCLD alias caused errors on Linux</li>
+<li>Fix socket blocking mode on keepalive connections with async workers</li>
+<li>Handle <code>SSLWantReadError</code> in <code>finish_body()</code> to prevent worker hangs</li>
+<li>Log SIGTERM as info level instead of warning</li>
+<li>Print exception details to stderr when worker fails to boot</li>
+<li>Fix <code>unreader.unread()</code> to prepend data to buffer instead of appending</li>
+<li>Prevent <code>RecursionError</code> when pickling Config objects</li>
+</ul>
+<hr />
+<h2 id="2400-2026-01-23">24.0.0 - 2026-01-23<a class="headerlink" href="#2400-2026-01-23" title="Permanent link">&para;</a></h2>
+<h3 id="new-features_7">New Features<a class="headerlink" href="#new-features_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ASGI Worker (Beta)</strong>: Native asyncio-based ASGI support for running async Python
+  frameworks like FastAPI, Starlette, and Quart without external dependencies</li>
+<li>HTTP/1.1 with keepalive connections</li>
+<li>WebSocket support</li>
+<li>Lifespan protocol for startup/shutdown hooks</li>
+<li>
+<p>Optional uvloop for improved performance</p>
+</li>
+<li>
+<p><strong>uWSGI Binary Protocol</strong>: Support for receiving requests from nginx via
+  <code>uwsgi_pass</code> directive</p>
+</li>
+<li>
+<p><strong>Documentation Migration</strong>: Migrated to MkDocs with Material theme</p>
+</li>
+</ul>
+<h3 id="security_4">Security<a class="headerlink" href="#security_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>gevent</strong>: Require gevent &gt;= 24.10.1 (CVE-2023-41419, CVE-2024-3219)</li>
+<li><strong>tornado</strong>: Require tornado &gt;= 6.5.0 (CVE-2025-47287)</li>
+</ul>
+<hr />
+<h2 id="2300-2024-08-10">23.0.0 - 2024-08-10<a class="headerlink" href="#2300-2024-08-10" title="Permanent link">&para;</a></h2>
+<ul>
+<li>minor docs fixes (<a href="https://github.com/benoitc/gunicorn/pull/3217">PR #3217</a>, <a href="https://github.com/benoitc/gunicorn/pull/3089">PR #3089</a>, <a href="https://github.com/benoitc/gunicorn/pull/3167">PR #3167</a>)</li>
+<li>worker_class parameter accepts a class (<a href="https://github.com/benoitc/gunicorn/pull/3079">PR #3079</a>)</li>
+<li>fix deadlock if request terminated during chunked parsing (<a href="https://github.com/benoitc/gunicorn/pull/2688">PR #2688</a>)</li>
+<li>permit receiving Transfer-Encodings: compress, deflate, gzip (<a href="https://github.com/benoitc/gunicorn/pull/3261">PR #3261</a>)</li>
+<li>permit Transfer-Encoding headers specifying multiple encodings. note: no parameters, still (<a href="https://github.com/benoitc/gunicorn/pull/3261">PR #3261</a>)</li>
+<li>sdist generation now explicitly excludes sphinx build folder (<a href="https://github.com/benoitc/gunicorn/pull/3257">PR #3257</a>)</li>
+<li>decode bytes-typed status (as can be passed by gevent) as utf-8 instead of raising <code>TypeError</code> (<a href="https://github.com/benoitc/gunicorn/pull/2336">PR #2336</a>)</li>
+<li>raise correct Exception when encounting invalid chunked requests (<a href="https://github.com/benoitc/gunicorn/pull/3258">PR #3258</a>)</li>
+<li>the SCRIPT_NAME and PATH_INFO headers, when received from allowed forwarders, are no longer restricted for containing an underscore (<a href="https://github.com/benoitc/gunicorn/pull/3192">PR #3192</a>)</li>
+<li>include IPv6 loopback address <code>[::1]</code> in default for <a href="../reference/settings/#forwarded_allow_ips">forwarded-allow-ips</a> and <a href="../reference/settings/#proxy_allow_ips">proxy-allow-ips</a> (<a href="https://github.com/benoitc/gunicorn/pull/3192">PR #3192</a>)</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The SCRIPT_NAME change mitigates a regression that appeared first in the 22.0.0 release</li>
+<li>Review your <a href="../reference/settings/#forwarded_allow_ips">forwarded-allow-ips</a> setting if you are still not seeing the SCRIPT_NAME transmitted</li>
+<li>Review your <a href="../reference/settings/#forwarder_headers">forwarder-headers</a> setting if you are missing headers after upgrading from a version prior to 22.0.0</li>
+</ul>
+</div>
+<h3 id="breaking-changes_1">Breaking changes<a class="headerlink" href="#breaking-changes_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>refuse requests where the uri field is empty (<a href="https://github.com/benoitc/gunicorn/pull/3255">PR #3255</a>)</li>
+<li>refuse requests with invalid CR/LR/NUL in heade field values (<a href="https://github.com/benoitc/gunicorn/pull/3253">PR #3253</a>)</li>
+<li>remove temporary <code>--tolerate-dangerous-framing</code> switch from 22.0 (<a href="https://github.com/benoitc/gunicorn/pull/3260">PR #3260</a>)</li>
+<li>If any of the breaking changes affect you, be aware that now refused requests can post a security problem, especially so in setups involving request pipe-lining and/or proxies.</li>
+</ul>
+<h2 id="2200-2024-04-17">22.0.0 - 2024-04-17<a class="headerlink" href="#2200-2024-04-17" title="Permanent link">&para;</a></h2>
+<ul>
+<li>use <code>utime</code> to notify workers liveness</li>
+<li>migrate setup to pyproject.toml</li>
+<li>fix numerous security vulnerabilities in HTTP parser (closing some request smuggling vectors)</li>
+<li>parsing additional requests is no longer attempted past unsupported request framing</li>
+<li>on HTTP versions &lt; 1.1 support for chunked transfer is refused (only used in exploits)</li>
+<li>requests conflicting configured or passed SCRIPT_NAME now produce a verbose error</li>
+<li>Trailer fields are no longer inspected for headers indicating secure scheme</li>
+<li>support Python 3.12</li>
+</ul>
+<h3 id="breaking-changes_2">Breaking changes<a class="headerlink" href="#breaking-changes_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>minimum version is Python 3.7</li>
+<li>the limitations on valid characters in the HTTP method have been bounded to Internet Standards</li>
+<li>requests specifying unsupported transfer coding (order.md) are refused by default (rare.md)</li>
+<li>HTTP methods are no longer casefolded by default (IANA method registry contains none affected)</li>
+<li>HTTP methods containing the number sign (#) are no longer accepted by default (rare.md)</li>
+<li>HTTP versions &lt; 1.0 or &gt;= 2.0 are no longer accepted by default (rare, only HTTP/1.1 is supported)</li>
+<li>HTTP versions consisting of multiple digits or containing a prefix/suffix are no longer accepted</li>
+<li>HTTP header field names Gunicorn cannot safely map to variables are silently dropped, as in other software</li>
+<li>HTTP headers with empty field name are refused by default (no legitimate use cases, used in exploits)</li>
+<li>requests with both Transfer-Encoding and Content-Length are refused by default (such a message might indicate an attempt to perform request smuggling)</li>
+<li>empty transfer codings are no longer permitted (reportedly seen with really old &amp; broken proxies)</li>
+</ul>
+<h3 id="security_5">Security<a class="headerlink" href="#security_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>fix CVE-2024-1135</li>
+</ul>
+<h2 id="history">History<a class="headerlink" href="#history" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../2026-news/">2026</a></li>
+<li><a href="../2024-news/">2024</a></li>
+<li><a href="../2023-news/">2023</a></li>
+<li><a href="../2021-news/">2021</a></li>
+<li><a href="../2020-news/">2020</a></li>
+<li><a href="../2019-news/">2019</a></li>
+<li><a href="../2018-news/">2018</a></li>
+<li><a href="../2017-news/">2017</a></li>
+<li><a href="../2016-news/">2016</a></li>
+<li><a href="../2015-news/">2015</a></li>
+<li><a href="../2014-news/">2014</a></li>
+<li><a href="../2013-news/">2013</a></li>
+<li><a href="../2012-news/">2012</a></li>
+<li><a href="../2011-news/">2011</a></li>
+<li><a href="../2010-news/">2010</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/benoitc/gunicorn" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://pypi.org/project/gunicorn/" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/sponsors/benoitc" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="m241 87.1 15 20.7 15-20.7C296 52.5 336.2 32 378.9 32 452.4 32 512 91.6 512 165.1v2.6c0 112.2-139.9 242.5-212.9 298.2-12.4 9.4-27.6 14.1-43.1 14.1s-30.8-4.6-43.1-14.1C139.9 410.2 0 279.9 0 167.7v-2.6C0 91.6 59.6 32 133.1 32 175.8 32 216 52.5 241 87.1"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy", "content.code.annotate", "navigation.instant", "navigation.instant.progress", "navigation.tracking", "navigation.sections", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "search.share", "toc.follow", "toc.integrate"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c21346df.min.js"></script>
+      
+        <script src="../assets/javascripts/toc-collapse.js"></script>
+      
+    
+  </body>
+</html>
